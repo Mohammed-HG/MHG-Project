@@ -68,6 +68,21 @@ app.put ('/api/phonebook/:user_id', (req, res) => {
         } ;
      });Server 
 });
+
+app.delete('/api/phonebook/:user_id', (req, res) => {
+    const UserId = req.params.user_id;
+    const sql = 'Delete From `phone book` Where user_id = ?';
+    db.query(sql, [UserId], (err, results) => {
+        if (err) {
+            console.error('Error Deleting Data:', err);
+            res.status(500).json({Error: 'Internal Server Error'});
+        } else if (results.affectRows === 0) {
+            res.status(404).json({Error: 'Contact Not Found'});
+        }else {
+            res.json({massage: 'Contact deleted successfully'});
+        }
+    });
+});
  
 app.get('fetch-contact/:user_id', (req, res) => {
     const UserId = req.params.user_id;
