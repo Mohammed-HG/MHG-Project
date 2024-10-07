@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const axios = require('axios');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,6 +25,10 @@ db.connect ((err) => {
         console.log('Connected to the database!');
     }
 });
+
+app.get('/', (req, res) => {
+    res.sendFile(path,join(__dirname, 'contact manager.html'));
+})
 
 app.get('/api/phonebook', (req, res) => {
     const sql = 'Select * From `phone book`';
