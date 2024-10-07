@@ -27,7 +27,7 @@ db.connect ((err) => {
 });
 
 app.get('/', (req, res) => {
-    res.sendFile(path,join(__dirname, 'contact manager.html'));
+    res.sendFile(path.join(__dirname, 'contact manager.html'));
 })
 
 app.get('/api/phonebook', (req, res) => {
