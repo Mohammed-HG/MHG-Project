@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
-const axios = require('axios');
 const path = require('path');
 
 const app = express();
@@ -66,12 +65,12 @@ app.put ('/api/phonebook/:user_id', (req, res) => {
         if (err) {
             console.error('Error Updating Data:', err);
             res.status(500).json({error: 'Internal server error' });
-        }else if (results.affectRows === 0) {
+        }else if (results.affectedRows === 0) {
             res.status(404).json({error: 'Contact not found'});
         }else {
-            res.json({massage: 'Contact updated successfully'});
+            res.json({message: 'Contact updated successfully'});
         } ;
-     });Server 
+     });
 });
 
 app.delete('/api/phonebook/:user_id', (req, res) => {
@@ -84,12 +83,12 @@ app.delete('/api/phonebook/:user_id', (req, res) => {
         } else if (results.affectRows === 0) {
             res.status(404).json({Error: 'Contact Not Found'});
         }else {
-            res.json({massage: 'Contact deleted successfully'});
+            res.json({message: 'Contact deleted successfully'});
         }
     });
 });
  
-app.get('fetch-contact/:user_id', (req, res) => {
+app.get('/fetch-contact/:user_id', (req, res) => {
     const UserId = req.params.user_id;
     const url = `http://127.0.0.1:3000/api/phonebook/${UserId}`;
 
