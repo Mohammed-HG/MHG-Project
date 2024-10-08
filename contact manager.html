@@ -7,9 +7,13 @@
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     </head>
     <body>
-        <h2>Delete Contact</h2>
-        <input type="text" id="UserIdInput" placeholder="Enter User Id">
-        <button onclick="deleteContact()">Delete Contact</button>
+
+        <h2>Add New Contact</h2>
+        <input type="text" id="FirstNameInput" placeholder="Enter First Name">
+        <input type="text" id="LastNameInput" placeholder="Enter Last Name">
+        <input type="text" id="PhoneNumberInput" placeholder="Enter Phone Number">
+        <input type="text" id="userEmailInput" placeholder="Enter Email">
+        <button onclick="AddContact()">Add Contact</button>
 
         <h2>Update Contact</h2>
         <input type="text" id="updateUserIdInput" placeholder="Enter User Id">
@@ -19,8 +23,33 @@
         <input type="text" id="userEmailInput" placeholder="Enter Email">
         <button onclick="updateContact()">Update Contact</button>
 
+        <h2>Delete Contact</h2>
+        <input type="text" id="UserIdInput" placeholder="Enter User Id">
+        <button onclick="deleteContact()">Delete Contact</button>
+
         <script>
-            function deleteContact() {
+
+            function AddContact() {
+                const UserId = document.getElementById('AddUserIdInput').value;
+                const url = `http://127.0.0.1:3000/api/phonebook/${userId}`;
+                const data = {
+                    FirstName: document.getElementById('FirstNameInput').value,
+                    LastName: document.getElementById('LastNameInput').value,
+                    Phone_Number: document.getElementById('PhoneNumberInput').value,
+                    User_Email: document.getElementById('userEmailInput').value
+                };
+
+            function updateContact() {
+                const UserId = document.getElementById('updateUserIdInput').value;
+                const url = `http://127.0.0.1:3000/api/phonebook/${userId}`;
+                const data = {
+                    FirstName: document.getElementById('FirstNameInput').value,
+                    LastName: document.getElementById('LastNameInput').value,
+                    Phone_Number: document.getElementById('PhoneNumberInput').value,
+                    User_Email: document.getElementById('userEmailInput').value
+                };
+
+                function deleteContact() {
                 const UserId = document.getElementById('UserIdInput').value;
                 const url = `http://127.0.0.1:3000/api/phonebook/${UserId}`;
 
@@ -33,16 +62,6 @@
                     });
             }
 
-            function updateContact() {
-                const UserId = document.getElementById('updateUserIdInput').value;
-                const url = `http://127.0.0.1:3000/api/phonebook/${userId}`;
-                const data = {
-                    FirstName: document.getElementById('FirstNameInput').value,
-                    LastName: document.getElementById('LastNameInput').value,
-                    Phone_Number: document.getElementById('PhoneNumberInput').value,
-                    User_Email: document.getElementById('userEmailInput').value
-                };
-
                 axios.put(url, data)
                     .then(response => {
                         console.log('Contact Updated Successfully:', response.data);
@@ -51,6 +70,7 @@
                         console.error('Error Updating Contact:', error);
                     });
             }
+        }
         </script>
     </body>
 </html>
