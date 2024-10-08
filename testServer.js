@@ -42,6 +42,21 @@ app.get('/api/phonebook', (req, res) => {
     });
 });
 
+app.post('/api/phonebook/:user_id', (req, res) => {
+    const UserId = req.params.user_id;
+    const sql = 'Insert Into `phone book` (FirstName, LastName, Phone_Number, User_Email) Values (?, ?, ?, ?)';
+    db.query(sql, [UserId], (err, results) => {
+        if (err) {
+            console.error('Error Adding New User');
+            res.status(500).json({error:'Internal Server Error'});
+        }else if (results.affectedRows === 0) {
+            res.status(400).json({error: 'Contact was not added'})
+        }else {
+            res.json(results);
+        }
+    })
+})
+
 app.get ('/api/phonebook/:user_id', (req, res) => {
     const UserId = req.params.user_id;
     const sql = 'Select * From `phone book` Where user_id = ?';
