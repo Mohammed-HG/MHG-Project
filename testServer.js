@@ -42,17 +42,17 @@ app.get('/api/phonebook', (req, res) => {
     });
 });
 
-app.post('/api/phonebook/:user_id', (req, res) => {
-    const UserId = req.params.user_id;
-    const sql = 'Insert Into `phone book` (FirstName, LastName, Phone_Number, User_Email) Values (?, ?, ?, ?)';
-    db.query(sql, [UserId], (err, results) => {
+app.post('/api/phonebook/', (req, res) => {
+    const { FirstName, LastName, Phone_Number, User_Email } = req.body;
+    const sql = 'Insert Into `phone book` (FirstName, LastName, Phone_Number, User_Email) Values (?, ?, ?, ?, ?)';
+    db.query(sql, [FirstName, LastName, Phone_Number, User_Email], (err, results) => {
         if (err) {
             console.error('Error Adding New User');
             res.status(500).json({error:'Internal Server Error'});
         }else if (results.affectedRows === 0) {
             res.status(400).json({error: 'Contact was not added'})
         }else {
-            res.json(results);
+            res.status(201).json({ message: 'Contact added successfully', contactId: results.insertId });
         }
     })
 })
