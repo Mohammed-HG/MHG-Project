@@ -29,7 +29,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'contact manager.html'));
 })
 
-app.get('/api/phonebook', (req, res) => {
+app.get('/api/contacts', (req, res) => {
     const sql = 'Select * From `phone book`';
     db.query(sql, (err, results)=> {    
         if (err) {
@@ -42,7 +42,7 @@ app.get('/api/phonebook', (req, res) => {
     });
 });
 
-app.post('/api/phonebook/', (req, res) => {
+app.post('/api/contacts', (req, res) => {
     const { FirstName, LastName, Phone_Number, User_Email } = req.body;
     const sql = 'Insert Into `phone book` (FirstName, LastName, Phone_Number, User_Email) Values (?, ?, ?, ?, ?)';
     db.query(sql, [FirstName, LastName, Phone_Number, User_Email], (err, results) => {
@@ -57,7 +57,7 @@ app.post('/api/phonebook/', (req, res) => {
     })
 })
 
-app.get ('/api/phonebook/:user_id', (req, res) => {
+app.get ('/api/contacts/:user_id', (req, res) => {
     const UserId = req.params.user_id;
     const sql = 'Select * From `phone book` Where user_id = ?';
     db.query(sql, [UserId], (err, results) => {
@@ -72,11 +72,11 @@ app.get ('/api/phonebook/:user_id', (req, res) => {
     });
 });
 
-app.put ('/api/phonebook/:user_id', (req, res) => {
+app.put ('/api/contacts/:user_id', (req, res) => {
     const UserId = req.params.user_id;
     const {FirstName, LastName, Phone_Number, User_Email} = req.body;
     const sql = 'Update `phone book` Set FirstName = ?, LastName = ?, Phone_Number = ?, User_Email = ? Where user_id = ?';
-    db.query(sql, [FirstName, LastName, Phone_Number, User_Email, UserId], (err, result) => {
+    db.query(sql, [FirstName, LastName, Phone_Number, User_Email, UserId], (err, results) => {
         if (err) {
             console.error('Error Updating Data:', err);
             res.status(500).json({error: 'Internal server error' });
@@ -88,7 +88,7 @@ app.put ('/api/phonebook/:user_id', (req, res) => {
      });
 });
 
-app.delete('/api/phonebook/:user_id', (req, res) => {
+app.delete('/api/contact/:user_id', (req, res) => {
     const UserId = req.params.user_id;
     const sql = 'Delete From `phone book` Where user_id = ?';
     db.query(sql, [UserId], (err, results) => {
@@ -103,20 +103,6 @@ app.delete('/api/phonebook/:user_id', (req, res) => {
     });
 });
  
-app.get('/fetch-contact/:user_id', (req, res) => {
-    const UserId = req.params.user_id;
-    const url = `http://127.0.0.1:3000/api/phonebook/${UserId}`;
-
-    axios.get(url)
-    .then(response => {
-        res.json(response.data);
-    })
-    .catch(error => {
-        console.error('Error fetching contact:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    });
-});
-
  app.listen(PORT, () =>{
     console.log(`Server is running on port ${PORT}`);
 });
