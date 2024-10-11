@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
-const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,27 +24,59 @@ db.connect ((err) => {
     }
 });
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'contact manager.html'));
-})
+
+
 
 app.get('/api/contacts', (req, res) => {
-    const sql = 'Select * From `phone book`';
-    db.query(sql, (err, results)=> {    
-        if (err) {
-            console.error('Error fetching data:', err)
-            res.status(500).json({ error: 'Internal server error'});
+    const { FirstName, LastName, Phone_Number, contact_Email } = req.query;
+    let sql = 'SELECT * FROM `phone book`';
+    const params = [];
+
+    if (FirstName || LastName || Phone_Number || contact_Email) {
+        sql += ' WHERE';
+        const conditions = [];
+
+        if (FirstName) {
+            conditions.push(' `FirstName` LIKE ?');
+            params.push(`%${FirstName}%`);
         }
-        else {
+
+        if (LastName) {
+            if (conditions.length > 0) sql += ' AND';
+            conditions.push(' `LastName` LIKE ?');
+            params.push(`%${LastName}%`);
+        }
+
+        if (Phone_Number) {
+            if (conditions.length > 0) sql += ' AND';
+            conditions.push(' `Phone_Number` LIKE ?');
+            params.push(`%${Phone_Number}%`);
+        }
+
+        if (contact_Email) {
+            if (conditions.length > 0) sql += ' AND';
+            conditions.push(' `User_Email` LIKE ?');
+            params.push(`%${User_Email}%`);
+        }
+
+        sql += conditions.join(' AND');
+    }
+
+    db.query(sql, params, (err, results) => {    
+        if (err) {
+            console.error('Error fetching data:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        } else {
             res.json(results);
         }
     });
 });
 
+        
 app.post('/api/contacts', (req, res) => {
-    const { FirstName, LastName, Phone_Number, User_Email } = req.body;
-    const sql = 'Insert Into `phone book` (FirstName, LastName, Phone_Number, User_Email) Values (?, ?, ?, ?, ?)';
-    db.query(sql, [FirstName, LastName, Phone_Number, User_Email], (err, results) => {
+    const { FirstName, LastName, Phone_Number, contact_Email } = req.body;
+    const sql = 'Insert Into `phone book` (FirstName, LastName, Phone_Number, contact_Email) Values (?, ?, ?, ?, ?)';
+    db.query(sql, [FirstName, LastName, Phone_Number, contact_Email], (err, results) => {
         if (err) {
             console.error('Error Adding New User');
             res.status(500).json({error:'Internal Server Error'});
@@ -57,10 +88,10 @@ app.post('/api/contacts', (req, res) => {
     })
 })
 
-app.get ('/api/contacts/:user_id', (req, res) => {
-    const UserId = req.params.user_id;
-    const sql = 'Select * From `phone book` Where user_id = ?';
-    db.query(sql, [UserId], (err, results) => {
+app.get ('/api/contacts/:contact_id', (req, res) => {
+    const ContactId = req.params.contact_id;
+    const sql = 'Select * From `phone book` Where contact_id = ?';
+    db.query(sql, [ContactId], (err, results) => {
         if (err) {
             console.error('Error fetching data:', err);
             res.status(500).json({ error: 'Internal server error' });
@@ -72,11 +103,11 @@ app.get ('/api/contacts/:user_id', (req, res) => {
     });
 });
 
-app.put ('/api/contacts/:user_id', (req, res) => {
-    const UserId = req.params.user_id;
-    const {FirstName, LastName, Phone_Number, User_Email} = req.body;
-    const sql = 'Update `phone book` Set FirstName = ?, LastName = ?, Phone_Number = ?, User_Email = ? Where user_id = ?';
-    db.query(sql, [FirstName, LastName, Phone_Number, User_Email, UserId], (err, results) => {
+app.put ('/api/contacts/:contact_id', (req, res) => {
+    const ContactId = req.params.contact_id;
+    const {FirstName, LastName, Phone_Number, contact_Email} = req.body;
+    const sql = 'Update `phone book` Set FirstName = ?, LastName = ?, Phone_Number = ?, User_Email = ? Where contact_id = ?';
+    db.query(sql, [FirstName, LastName, Phone_Number, contact_Email, ContactId], (err, results) => {
         if (err) {
             console.error('Error Updating Data:', err);
             res.status(500).json({error: 'Internal server error' });
@@ -88,10 +119,10 @@ app.put ('/api/contacts/:user_id', (req, res) => {
      });
 });
 
-app.delete('/api/contact/:user_id', (req, res) => {
-    const UserId = req.params.user_id;
-    const sql = 'Delete From `phone book` Where user_id = ?';
-    db.query(sql, [UserId], (err, results) => {
+app.delete('/api/contact/:contact_id', (req, res) => {
+    const ContactId = req.params.contact_id;
+    const sql = 'Delete From `phone book` Where contact_id = ?';
+    db.query(sql, [ContactId], (err, results) => {
         if (err) {
             console.error('Error Deleting Data:', err);
             res.status(500).json({Error: 'Internal Server Error'});
