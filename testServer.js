@@ -1,4 +1,6 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
 
@@ -7,6 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
+//Here DataBase Connection
 const db = mysql.createConnection({
 
     host: '127.0.0.1',
@@ -24,10 +27,47 @@ db.connect ((err) => {
     }
 });
 
+// endpoint for register
+app,post('/api/register', async (req, res) => {
+    const {username, password} = req.body;
+    const hashedPassword = await bcrypt.hash(password,10);
+    const sql = 'Insert Into phonebookusers (UserName, UserPass) Values (?, ?)'; 
 
+    db.query(sql, [username, hashedPassword], (err, result) => {
+        if (err) {
+            console.error('Error Registering User:', err);
+            return res.status(500).json({error:'Internal Server Error'});
+        }
+        res.status(201).send('User Registered');
+    })
+})
 
+//endpoint for login
+app.post('/api/login', async (req, res) => {
+    const {username, password} = req.body;
+    const sql = 'Select * phonebookusers Where UserName = ?';
+    db.query(sql, [username], async (err, results) => {
+        if (err) {
+            console.error('Error Fetching User:', err);
+            return res.status(500).json({error:'Internal Server Error'});
+        }
+        if (results.length === 0) {
+            return res.status(401).send('Invalid Credentials');
+        }
+        const user = results[0];
+        const isPsswordValid = await bcrypt.compare(password, user.UserPass);
 
-app.get('/api/contacts', (req, res) => {
+        if (isPsswordValid) {
+            const token = jwt.sign({username: user.username},'your_jwt_Sceret', {expiresIn: '1h'});
+            res.json({token});
+        }else {
+            res.status(401).send('Invalid Credentials');
+        }
+    })
+})
+
+//endpoint for Get All\Search
+app.get('/api/contacts',authenticateToken, (req, res) => {
     const { FirstName, LastName, Phone_Number, contact_Email } = req.query;
     let sql = 'SELECT * FROM `phone book`';
     const params = [];
@@ -72,8 +112,8 @@ app.get('/api/contacts', (req, res) => {
     });
 });
 
-        
-app.post('/api/contacts', (req, res) => {
+//endpoint for Insert New Contact on DataBase        
+app.post('/api/contacts', authenticateToken, (req, res) => {
     const { FirstName, LastName, Phone_Number, contact_Email } = req.body;
     const sql = 'Insert Into `phone book` (FirstName, LastName, Phone_Number, contact_Email) Values (?, ?, ?, ?, ?)';
     db.query(sql, [FirstName, LastName, Phone_Number, contact_Email], (err, results) => {
@@ -88,6 +128,7 @@ app.post('/api/contacts', (req, res) => {
     })
 })
 
+//endpoint for Search by Id
 app.get ('/api/contacts/:contact_id', (req, res) => {
     const ContactId = req.params.contact_id;
     const sql = 'Select * From `phone book` Where contact_id = ?';
@@ -103,7 +144,8 @@ app.get ('/api/contacts/:contact_id', (req, res) => {
     });
 });
 
-app.put ('/api/contacts/:contact_id', (req, res) => {
+//endpoint for Update Contact On DataBase
+app.put ('/api/contacts/:contact_id', authenticateToken, (req, res) => {
     const ContactId = req.params.contact_id;
     const {FirstName, LastName, Phone_Number, contact_Email} = req.body;
     const sql = 'Update `phone book` Set FirstName = ?, LastName = ?, Phone_Number = ?, User_Email = ? Where contact_id = ?';
@@ -119,7 +161,8 @@ app.put ('/api/contacts/:contact_id', (req, res) => {
      });
 });
 
-app.delete('/api/contact/:contact_id', (req, res) => {
+// endpoint for delete Contact
+app.delete('/api/contact/:contact_id', authenticateToken ,(req, res) => {
     const ContactId = req.params.contact_id;
     const sql = 'Delete From `phone book` Where contact_id = ?';
     db.query(sql, [ContactId], (err, results) => {
@@ -134,6 +177,18 @@ app.delete('/api/contact/:contact_id', (req, res) => {
     });
 });
  
+//Secure endpoint
+function authenticateToken(req, res, next) {
+    const token = req.header('Authorization')?.split(' ') [1];
+    if (!token) return res.sendStatus(401);
+
+    jwt.verify(token, 'your_jwt_secret', (err, user) => {
+        if (err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    });
+}
+
  app.listen(PORT, () =>{
     console.log(`Server is running on port ${PORT}`);
 });
