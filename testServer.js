@@ -28,7 +28,7 @@ db.connect ((err) => {
 });
 
 // endpoint for register
-app,post('/api/register', async (req, res) => {
+app.post('/api/register', async (req, res) => {
     const {username, password} = req.body;
     const hashedPassword = await bcrypt.hash(password,10);
     const sql = 'Insert Into phonebookusers (UserName, UserPass) Values (?, ?)'; 
