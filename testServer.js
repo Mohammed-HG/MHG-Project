@@ -28,7 +28,11 @@ db.connect ((err) => {
 });
 
 // endpoint for register
+<<<<<<< HEAD
 app.post('/api/register', authenticateToken, async (req, res) => {
+=======
+app,post('/api/register', async (req, res) => {
+>>>>>>> 773d15e (Add login\regster endpoint and Secure it)
     const {username, password} = req.body;
     const hashedPassword = await bcrypt.hash(password,10);
     const sql = 'Insert Into phonebookusers (UserName, UserPass) Values (?, ?)'; 
@@ -43,7 +47,11 @@ app.post('/api/register', authenticateToken, async (req, res) => {
 })
 
 //endpoint for login
+<<<<<<< HEAD
 app.post('/api/login',authenticateToken, async (req, res) => {
+=======
+app.post('/api/login', async (req, res) => {
+>>>>>>> 773d15e (Add login\regster endpoint and Secure it)
     const {username, password} = req.body;
     const sql = 'Select * phonebookusers Where UserName = ?';
     db.query(sql, [username], async (err, results) => {
@@ -129,7 +137,11 @@ app.post('/api/contacts', authenticateToken, (req, res) => {
 })
 
 //endpoint for Search by Id
+<<<<<<< HEAD
 app.get ('/api/contacts/:contact_id', authenticateToken, (req, res) => {
+=======
+app.get ('/api/contacts/:contact_id', (req, res) => {
+>>>>>>> 773d15e (Add login\regster endpoint and Secure it)
     const ContactId = req.params.contact_id;
     const sql = 'Select * From `phone book` Where contact_id = ?';
     db.query(sql, [ContactId], (err, results) => {
