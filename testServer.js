@@ -28,10 +28,10 @@ db.connect ((err) => {
 });
 
 // endpoint for register
-app.post('/api/register', authenticateToken, async (req, res) => {
+app.post('/api/register', async (req, res) => {
     const {username, password} = req.body;
     const hashedPassword = await bcrypt.hash(password,10);
-    const sql = 'Insert Into phonebookusers (UserName, UserPass) Values (?, ?)'; 
+    const sql = 'Insert Into `phonebookusers` (UserName, UserPass) Values (?, ?)'; 
 
     db.query(sql, [username, hashedPassword], (err, result) => {
         if (err) {
@@ -43,9 +43,9 @@ app.post('/api/register', authenticateToken, async (req, res) => {
 })
 
 //endpoint for login
-app.post('/api/login',authenticateToken, async (req, res) => {
+app.post('/api/login', async (req, res) => {
     const {username, password} = req.body;
-    const sql = 'Select * phonebookusers Where UserName = ?';
+    const sql = 'Select * From `phonebookusers` Where UserName = ?';
     db.query(sql, [username], async (err, results) => {
         if (err) {
             console.error('Error Fetching User:', err);
@@ -55,10 +55,10 @@ app.post('/api/login',authenticateToken, async (req, res) => {
             return res.status(401).send('Invalid Credentials');
         }
         const user = results[0];
-        const isPsswordValid = await bcrypt.compare(password, user.UserPass);
+        const isPasswordValid = await bcrypt.compare(password, user.UserPass);
 
-        if (isPsswordValid) {
-            const token = jwt.sign({username: user.username},'your_jwt_Sceret', {expiresIn: '1h'});
+        if (isPasswordValid) {
+            const token = jwt.sign({username: user.UserName},'your_jwt_Secret', {expiresIn: '1h'});
             res.json({token});
         }else {
             res.status(401).send('Invalid Credentials');
@@ -177,7 +177,7 @@ app.delete('/api/contact/:contact_id', authenticateToken ,(req, res) => {
     });
 });
  
-//Secure endpoint
+//Secure MiddleWare
 function authenticateToken(req, res, next) {
     const token = req.header('Authorization')?.split(' ') [1];
     if (!token) return res.sendStatus(401);
