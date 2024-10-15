@@ -58,7 +58,7 @@ app.post('/api/login', async (req, res) => {
         const isPasswordValid = await bcrypt.compare(password, user.UserPass);
 
         if (isPasswordValid) {
-            const token = jwt.sign({username: user.UserName},'your_jwt_Secret', {expiresIn: '1h'});
+            const token = jwt.sign({username: user.UserName},'your_jwt_secret', {expiresIn: '1h'});
             res.json({token});
         }else {
             res.status(401).send('Invalid Credentials');
@@ -180,10 +180,16 @@ app.delete('/api/contact/:contact_id', authenticateToken ,(req, res) => {
 //Secure MiddleWare
 function authenticateToken(req, res, next) {
     const token = req.header('Authorization')?.split(' ') [1];
-    if (!token) return res.sendStatus(401);
+    if (!token) {
+        console.log('No token provided');
+        return res.sendStatus(401);
+    }
 
     jwt.verify(token, 'your_jwt_secret', (err, user) => {
-        if (err) return res.sendStatus(403);
+        if (err) 
+            {console.log('Token verification failed:', err);
+            return res.sendStatus(403);
+            }
         req.user = user;
         next();
     });
