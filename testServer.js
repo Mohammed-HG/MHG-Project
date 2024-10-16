@@ -75,7 +75,7 @@ app.post('/api/login', async (req, res) => {
 })
 
 //endpoint for Get All\Search
-app.get('/api/contacts',authenticateToken, (req, res) => {
+app.get('/api/contacts', authenticateToken, (req, res) => {
     const { FirstName, LastName, Phone_Number, contact_Email } = req.query;
     let sql = 'SELECT * FROM `phone book`';
     const params = [];
@@ -103,8 +103,8 @@ app.get('/api/contacts',authenticateToken, (req, res) => {
 
         if (contact_Email) {
             if (conditions.length > 0) sql += ' AND';
-            conditions.push(' `User_Email` LIKE ?');
-            params.push(`%${User_Email}%`);
+            conditions.push(' `contact_Email` LIKE ?');
+            params.push(`%${contact_Email}%`);
         }
 
         sql += conditions.join(' AND');
@@ -123,7 +123,7 @@ app.get('/api/contacts',authenticateToken, (req, res) => {
 //endpoint for Insert New Contact on DataBase        
 app.post('/api/contacts', authenticateToken, (req, res) => {
     const { FirstName, LastName, Phone_Number, contact_Email } = req.body;
-    const sql = 'Insert Into `phone book` (FirstName, LastName, Phone_Number, contact_Email) Values (?, ?, ?, ?, ?)';
+    const sql = 'Insert Into `phone book` (FirstName, LastName, Phone_Number, contact_Email) Values (?, ?, ?, ?)';
     db.query(sql, [FirstName, LastName, Phone_Number, contact_Email], (err, results) => {
         if (err) {
             console.error('Error Adding New User');
@@ -160,7 +160,7 @@ app.get ('/api/contacts/:contact_id', (req, res) => {
 app.put ('/api/contacts/:contact_id', authenticateToken, (req, res) => {
     const ContactId = req.params.contact_id;
     const {FirstName, LastName, Phone_Number, contact_Email} = req.body;
-    const sql = 'Update `phone book` Set FirstName = ?, LastName = ?, Phone_Number = ?, User_Email = ? Where contact_id = ?';
+    const sql = 'Update `phone book` Set FirstName = ?, LastName = ?, Phone_Number = ?, contact_Email = ? Where contact_id = ?';
     db.query(sql, [FirstName, LastName, Phone_Number, contact_Email, ContactId], (err, results) => {
         if (err) {
             console.error('Error Updating Data:', err);
@@ -174,7 +174,7 @@ app.put ('/api/contacts/:contact_id', authenticateToken, (req, res) => {
 });
 
 // endpoint for delete Contact
-app.delete('/api/contact/:contact_id', authenticateToken ,(req, res) => {
+app.delete('/api/contacts/:contact_id', authenticateToken ,(req, res) => {
     const ContactId = req.params.contact_id;
     const sql = 'Delete From `phone book` Where contact_id = ?';
     db.query(sql, [ContactId], (err, results) => {
