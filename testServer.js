@@ -72,6 +72,7 @@ app.get('/api/contacts', authenticateToken, (req, res) => {
     const { FirstName, LastName, Phone_Number, contact_Email } = req.query;
     const userId = req.user.userId;
     let sql = 'SELECT `contacts`.*, `users`.UserName FROM `contacts` LEFT JOIN `users` ON `contacts`.UserId = `users`.UserId WHERE `contacts`.UserId = ?';
+  
     const params = [userId];
 
         const conditions = [];
