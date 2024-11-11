@@ -12,6 +12,7 @@ const Main = () => {
     const fetchContacts = async () => {
         const response = await axios.get('http://127.0.0.1:3000/api/contacts');
         setcontacts(response.data);
+        
     };
 
     const handleAdd = async () => {
@@ -21,7 +22,7 @@ const Main = () => {
     };
 
     const handleDelete = async (id) => {
-        await axios.delete('http://127.0.0.1:3000/api/contacts/:contact_id');
+        await axios.delete('http://127.0.0.1:3000/api/contacts/${contact_id}');
         setcontacts(contacts.filter(contact => contact.id !== id));
     };
 
@@ -35,7 +36,7 @@ const Main = () => {
     return (
         <div>
             <h1>Contacts</h1>
-            <url>
+            <ul>
                 {contacts.map(contact => (
                     <li key = {contact.id}>
                         {contact.FirstName} ({contact.contact_Email})
@@ -43,7 +44,7 @@ const Main = () => {
                         <button onClick={() => handleDelete(contact.id)}>Delete</button>
                     </li>
                 ))}
-            </url>
+            </ul>
 
             <h2>Add New Contact</h2>
             <input
@@ -63,14 +64,14 @@ const Main = () => {
             <input
             type="text"
             placeholder="Phone Number"
-            value={newContact.LastName}
+            value={newContact.Phone_Number}
             onChange={(e) => setnewContact({...newContact, Phone_Number: e.target.value})}
             />
 
             <input
             type="text"
             placeholder="Email"
-            value={newContact.LastName}
+            value={newContact.contact_Email}
             onChange={(e) => setnewContact({...newContact, contact_Email: e.target.value})}
             />
 
