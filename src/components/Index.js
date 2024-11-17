@@ -8,6 +8,10 @@ const Index = () => {
     navigate('/login');
   };
 
+  const handleButtonClick1 = () => {
+    navigate('/register');
+  };
+
   return (
     <div>
       <h1>Welcome to the Phone Book App</h1>
@@ -15,7 +19,13 @@ const Index = () => {
 
       <h2>Login</h2>
       <button onClick={handleButtonClick}>Go to Login</button>
+
+      <h2>Register</h2>
+      <button onClick={handleButtonClick1}>Go to Register</button>
+    
     </div>
+
+    
   );
 };
 

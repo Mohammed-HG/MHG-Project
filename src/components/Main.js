@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 import axios from "axios";
 
 const Main = () => {
-    const [contacts, setcontacts] = useState([]);
+    const [contacts, setContacts] = useState([]);
     const [newContact, setnewContact] = useState({FirstName: '', LastName: '', Phone_Number: '', contact_Email: ''});
 
     useEffect(() => {
@@ -20,7 +20,7 @@ const Main = () => {
                     headers: { 'Authorization': `Bearer ${token}`
                 }
             });
-            setcontacts(response.data);
+            setContacts(response.data);
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 alert('Unauthorized. Please login again.');
@@ -38,7 +38,7 @@ const Main = () => {
                     'Authorization': `Bearer ${token}`
             }
     });
-        setcontacts([...contacts, response.data]);
+        setContacts([...contacts, response.data]);
         setnewContact({FirstName: '', LastName: '', Phone_Number: '', contact_Email: ''});
     } catch (error) {
         if (error.response && error.response.status === 401) {
@@ -49,16 +49,15 @@ const Main = () => {
     }
     };
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (contact_id) => {
         const token = localStorage.getItem('token');
         try {
-            await axios.delete('http://127.0.0.1:3000/api/contacts/${contact_id}', {
+            await axios.delete(`http://127.0.0.1:3000/api/contacts/${contact_id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
-            });
-            setcontacts(contacts.filter(contact => contact.id !== id));
-        } catch (error) {
+            });            
+            setContacts(contacts.filter(contact => contact.contact_id !== contact_id));        } catch (error) {
             if (error.response && error.response.status === 401) {
                 alert('Unauthorized. Please login again.');
             } else {
@@ -67,9 +66,9 @@ const Main = () => {
         }
     };
 
-    const handleEdit = async (id) => {
+    const handleEdit = async (contact_id) => {
         const token = localStorage.getItem('token');
-        const contact = contacts.find(contact => contact.id === id);
+        const contact = contacts.find(contact => contact.contact_id === contact_id);
         const updatedContact = {
             ...contact, 
             FirstName: prompt('New First Name:', contact.FirstName),
@@ -78,12 +77,12 @@ const Main = () => {
             contact_Email: prompt('New Email:', contact.contact_Email)
         };
         try {
-            await axios.put('http://127.0.0.1:3000/api/contacts/:contact_id', updatedContact, {
+            await axios.put(`http://127.0.0.1:3000/api/contacts/${contact_id}`, updatedContact, {
                 headers: { 
                     'Authorization': `Bearer ${token}` 
                 } 
             }); 
-            setcontacts(contacts.map(contact => contact.id === id ? updatedContact : contact)); 
+            setContacts(contacts.map(contact => contact.contact_id === contact_id ? updatedContact : contact)); 
         } catch (error) { 
             if (error.response && error.response.status === 401) { 
                 alert('Unauthorized. Please login again.'); 
@@ -98,10 +97,10 @@ const Main = () => {
             <h1>Contacts</h1>
             <ul>
                 {contacts.map(contact => (
-                    <li key = {contact.id}>
+                    <li key = {contact.contact_id}>
                         {contact.FirstName} ({contact.contact_Email})
-                        <button onClick={() => handleEdit(contact.id)}>Edit</button>
-                        <button onClick={() => handleDelete(contact.id)}>Delete</button>
+                        <button onClick={() => handleEdit(contact.contact_id)}>Edit</button>
+                        <button onClick={() => handleDelete(contact.contact_id)}>Delete</button>
                     </li>
                 ))}
             </ul>
