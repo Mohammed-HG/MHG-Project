@@ -7,7 +7,7 @@ const Register = () => {
     const [newPassword, setNewPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
         try {
             const response = await axios.post('http://127.0.0.1:3000/api/register', {newUsername, newPassword});
@@ -22,7 +22,7 @@ const Register = () => {
     }
 
 return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleRegister}>
         <h1>Register</h1>
         <div>
             <label>Set User Name</label>
