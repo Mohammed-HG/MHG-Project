@@ -1,9 +1,20 @@
 import React, {useState, useEffect} from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import NavBar from "../adds/NavBar";
+import MessageModal from "./MessageModal";
 
 const Main = () => {
+
+    const [modalShow, setModalShow] = useState(false); 
+    const [modalTitle, setModalTitle] = useState(''); 
+    const [modalMessage, setModalMessage] = useState(''); 
+    
     const [contacts, setContacts] = useState([]);
     const [newContact, setnewContact] = useState({FirstName: '', LastName: '', Phone_Number: '', contact_Email: ''});
+    const navigate = useNavigate();
+
+    const handleClose = () => setModalShow(false);
 
     useEffect(() => {
         fetchContacts();
@@ -12,7 +23,9 @@ const Main = () => {
     const fetchContacts = async () => {
         const token = localStorage.getItem('token');
         if (!token) {
-            alert('No token found. Please login.');
+            setModalTitle('Authentication Error'); 
+            setModalMessage('Authentication token Expired. Please login.');
+            setModalShow(true);
              return;
             }
             try {
@@ -22,33 +35,18 @@ const Main = () => {
             });
             setContacts(response.data);
         } catch (error) {
-            if (error.response && error.response.status === 401) {
-                alert('Unauthorized. Please login again.');
+            if (error.response && error.response.status === 403) {
+                setModalTitle('Session Expired'); 
+                setModalMessage('Your session has expired. Please log in again '); 
+                setModalShow(true);
+                navigate('/login');
             } else {
                 console.error('Error fetching contacts:', error);
             }
         }
     };
 
-    const handleAdd = async () => {
-        const token = localStorage.getItem('token');
-        try {
-            const response = await axios.post('http://127.0.0.1:3000/api/contacts', newContact,{
-                headers: {
-                    'Authorization': `Bearer ${token}`
-            }
-    });
-        setContacts([...contacts, response.data]);
-        setnewContact({FirstName: '', LastName: '', Phone_Number: '', contact_Email: ''});
-    } catch (error) {
-        if (error.response && error.response.status === 401) {
-            alert('Unauthorized. Please login again.');
-        } else {
-            console.error('Error adding contact:', error);
-        }
-    }
-    };
-
+   
     const handleDelete = async (contact_id) => {
         const token = localStorage.getItem('token');
         try {
@@ -57,9 +55,12 @@ const Main = () => {
                     'Authorization': `Bearer ${token}`
                 }
             });            
-            setContacts(contacts.filter(contact => contact.contact_id !== contact_id));        } catch (error) {
-            if (error.response && error.response.status === 401) {
-                alert('Unauthorized. Please login again.');
+            setContacts(contacts.filter(contact => contact.contact_id !== contact_id));
+        } catch (error) {
+            if (error.response && error.response.status === 403) {
+                alert('You have been logged out. Please login again.');
+                navigate('/login');
+
             } else {
                 console.error('Error deleting contact:', error);
             }
@@ -84,58 +85,52 @@ const Main = () => {
             }); 
             setContacts(contacts.map(contact => contact.contact_id === contact_id ? updatedContact : contact)); 
         } catch (error) { 
-            if (error.response && error.response.status === 401) { 
-                alert('Unauthorized. Please login again.'); 
+            if (error.response && error.response.status === 403) { 
+                alert('You have been logged out. Please login again.'); 
+                navigate('/login');
+
             } else { 
                 console.error('Error updating contact:', error); 
             } 
         } 
     };
 
+    const handleButtonClick = () => {
+        navigate('/Add-Contact');
+      };
+
     return (
-        <div>
+        <><div>
+            <NavBar />
+
             <h1>Contacts</h1>
-            <ul>
+            <table class="table">
+                <thead>
+                    <tr>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Phone Number</th>
+                    <th scope="col">Email</th>
+                    </tr>
+                </thead>
+                <tbody>
                 {contacts.map(contact => (
-                    <li key = {contact.contact_id}>
-                        {contact.FirstName} ({contact.contact_Email})
-                        <button onClick={() => handleEdit(contact.contact_id)}>Edit</button>
-                        <button onClick={() => handleDelete(contact.contact_id)}>Delete</button>
-                    </li>
+                    <tr key={contact.contact_id}>
+                        <td scope="row">{contact.FirstName} </td>  
+                        <td scope="row">{contact.LastName}</td>
+                        <td scope="row">{contact.Phone_Number}</td>
+                        <td scope="row">{contact.contact_Email}</td>
+                    </tr>
                 ))}
-            </ul>
-
-            <h2>Add New Contact</h2>
-            <input
-            type="text"
-            placeholder="FirstName"
-            value={newContact.FirstName}
-            onChange={(e) => setnewContact({...newContact, FirstName: e.target.value})}
-            />
-
-            <input
-            type="text"
-            placeholder="LastName"
-            value={newContact.LastName}
-            onChange={(e) => setnewContact({...newContact, LastName: e.target.value})}
-            />
-
-            <input
-            type="text"
-            placeholder="Phone Number"
-            value={newContact.Phone_Number}
-            onChange={(e) => setnewContact({...newContact, Phone_Number: e.target.value})}
-            />
-
-            <input
-            type="text"
-            placeholder="Email"
-            value={newContact.contact_Email}
-            onChange={(e) => setnewContact({...newContact, contact_Email: e.target.value})}
-            />
-
-            <button onClick={handleAdd}>Add Contact</button>
+                </tbody>
+                
+            </table>
         </div>
+        <div>
+            <button onClick={handleButtonClick}>Add New Contact</button>
+        </div>
+        </>
+
     );
 };
 
