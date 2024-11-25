@@ -1,9 +1,71 @@
 import React, {useState, useEffect} from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import styled from 'styled-components';
 import NavBar from "../adds/NavBar";
 import MessageModal from "./MessageModal";
+import ContactDetailsModal from "./ContactDetailsModal";
 
+const theme = {
+    background: '#fff',
+    color: '#333',
+    tableBg: '#f9f9f9',
+    buttonBg: '#8e44ad',
+    buttonHoverBg: '#5b6ef4',
+  };
+  
+  const Container = styled.div`
+    background: ${theme.background};
+    color: ${theme.color};
+    min-height: 100vh;
+    padding: 20px;
+    transition: background 0.3s, color 0.3s;
+  `;
+  
+  const Title = styled.h1`
+    text-align: center;
+  `;
+  
+  const Table = styled.table`
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: ${theme.tableBg};
+    border-radius: 10px;
+    overflow: hidden;
+  `;
+  
+  const Th = styled.th`
+    padding: 12px;
+    background: ${theme.buttonBg};
+    color: #fff;
+  `;
+  
+  const Td = styled.td`
+    padding: 12px;
+    border: 1px solid ${theme.background};
+    cursor: pointer;
+    &:hover {
+      background: ${theme.buttonHoverBg};
+      color: #fff;
+    }
+  `;
+  
+  const Button = styled.button`
+    background: ${theme.buttonBg};
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.3s;
+  
+    &:hover {
+      background: ${theme.buttonHoverBg};
+      transform: translateY(-2px);
+    }
+  `;
 const Main = () => {
 
     const [modalShow, setModalShow] = useState(false); 
@@ -14,7 +76,12 @@ const Main = () => {
     const [newContact, setnewContact] = useState({FirstName: '', LastName: '', Phone_Number: '', contact_Email: ''});
     const navigate = useNavigate();
 
-    const handleClose = () => setModalShow(false);
+    const [selectedContact, setSelectedContact] = useState(null);
+
+    const handleClose = () => {
+        setModalShow(false);
+        setSelectedContact(null);
+    }
 
     useEffect(() => {
         fetchContacts();
@@ -46,91 +113,51 @@ const Main = () => {
         }
     };
 
-   
-    const handleDelete = async (contact_id) => {
-        const token = localStorage.getItem('token');
-        try {
-            await axios.delete(`http://127.0.0.1:3000/api/contacts/${contact_id}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });            
-            setContacts(contacts.filter(contact => contact.contact_id !== contact_id));
-        } catch (error) {
-            if (error.response && error.response.status === 403) {
-                alert('You have been logged out. Please login again.');
-                navigate('/login');
-
-            } else {
-                console.error('Error deleting contact:', error);
-            }
-        }
-    };
-
-    const handleEdit = async (contact_id) => {
-        const token = localStorage.getItem('token');
-        const contact = contacts.find(contact => contact.contact_id === contact_id);
-        const updatedContact = {
-            ...contact, 
-            FirstName: prompt('New First Name:', contact.FirstName),
-            LastName: prompt('New Last Name:', contact.LastName), 
-            Phone_Number: prompt('New Phone Number:', contact.Phone_Number), 
-            contact_Email: prompt('New Email:', contact.contact_Email)
-        };
-        try {
-            await axios.put(`http://127.0.0.1:3000/api/contacts/${contact_id}`, updatedContact, {
-                headers: { 
-                    'Authorization': `Bearer ${token}` 
-                } 
-            }); 
-            setContacts(contacts.map(contact => contact.contact_id === contact_id ? updatedContact : contact)); 
-        } catch (error) { 
-            if (error.response && error.response.status === 403) { 
-                alert('You have been logged out. Please login again.'); 
-                navigate('/login');
-
-            } else { 
-                console.error('Error updating contact:', error); 
-            } 
-        } 
-    };
+     const handleRowClick = (contact) => {
+    setSelectedContact(contact);
+    setModalShow(true);
+  };
 
     const handleButtonClick = () => {
         navigate('/Add-Contact');
       };
 
     return (
-        <><div>
-            <NavBar />
-
-            <h1>Contacts</h1>
-            <table class="table">
-                <thead>
-                    <tr>
-                    <th scope="col">First Name</th>
-                    <th scope="col">Last Name</th>
-                    <th scope="col">Phone Number</th>
-                    <th scope="col">Email</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {contacts.map(contact => (
-                    <tr key={contact.contact_id}>
-                        <td scope="row">{contact.FirstName} </td>  
-                        <td scope="row">{contact.LastName}</td>
-                        <td scope="row">{contact.Phone_Number}</td>
-                        <td scope="row">{contact.contact_Email}</td>
-                    </tr>
-                ))}
-                </tbody>
-                
-            </table>
-        </div>
-        <div>
-            <button onClick={handleButtonClick}>Add New Contact</button>
-        </div>
-        </>
-
+        <Container>
+        <NavBar />
+        <Title>Contacts</Title>
+        <Table>
+          <thead>
+            <tr>
+              <Th>First Name</Th>
+              <Th>Last Name</Th>
+            </tr>
+          </thead>
+          <tbody>
+            {contacts.map((contact) => (
+              <tr key={contact.contact_id} onClick={() => handleRowClick(contact)}>
+                <Td>{contact.FirstName}</Td>
+                <Td>{contact.LastName}</Td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+        <Button onClick={handleButtonClick}>Add New Contact</Button>
+        <MessageModal
+          show={modalShow}
+          handleClose={handleClose}
+          title={modalTitle}
+          message={modalMessage}
+        />
+        {selectedContact && (
+          <ContactDetailsModal
+            show={modalShow}
+            handleClose={handleClose}
+            contact={selectedContact}
+            fetchContacts={fetchContacts} // Pass down fetchContacts to refresh the contacts list
+          />
+        )}
+      </Container>
     );
 };
 
