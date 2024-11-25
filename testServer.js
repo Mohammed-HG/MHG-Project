@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
+const router = express.Router();
 const cors = require('cors');
 
 require('dotenv').config();
@@ -12,6 +13,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 //DataBase Connection
 const db = mysql.createConnection({
@@ -70,6 +73,19 @@ app.post('/api/login', async (req, res) => {
         }
     })
 })
+
+//Logout endpoint
+router.post('/api/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ message: 'Logout failed' });
+        }
+        res.clearCookie('connect.sid', { path:'/'});
+        res.status(200).json({ message: 'Logged out Succssfully' });
+    });
+});
+
+module.exports = router;
 
 //Get All\Search endpoint
 app.get('/api/contacts', authenticateToken, (req, res) => {
@@ -188,6 +204,14 @@ app.delete('/api/contacts/:contact_id', authenticateToken ,(req, res) => {
         }
     });
 });
+
+// Session middleware setup
+app.use(session({
+    secret: 'your_secret_key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secret: false }
+  }))
  
 //MiddleWare function
 function authenticateToken(req, res, next) {
