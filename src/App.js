@@ -8,6 +8,7 @@ import Main from './components/Main';
 import AddContact from './components/AddContact';
 import NavBar from './adds/NavBar';
 import MessageModal from './components/MessageModal';
+import Logout from './components/Logout';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@react-login-page/page5';
 
@@ -18,6 +19,7 @@ function App() {
       <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<Register />} />
           <Route path="/Home" element={<Main />} />
           <Route path="/Add-Contact" element={<AddContact />} />

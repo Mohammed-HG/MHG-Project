@@ -2,9 +2,99 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import MessageModal from './MessageModal';
-import { Container } from 'react-bootstrap';
+import styled from 'styled-components';
 
-const Login = () => {
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(120deg, #2980b9, #8e44ad);
+  padding: 20px;
+  font-family: 'Roboto', sans-serif;
+`;
+
+const Form = styled.form`
+  background: #ff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  animation: fadeIn 1s ease-in-out;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
+const Title = styled.h2`
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  transition: border-color 0.3s;
+
+  &:focus {
+    border-color: #8e44ad;
+    outline: none;
+    box-shadow: 0 0 5px rgba(142, 68, 173, 0.5);
+  }
+`;
+
+const Checkbox = styled.div`
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+
+  input {
+    margin-right: 10px;
+  }
+
+  label {
+    margin: 0;
+  }
+`;
+
+const Button = styled.button`
+  width: 100%;
+  padding: 12px;
+  background: #1302339a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, transform 0.3s;
+
+  &:hover {
+    background: #5b6ef4;
+    transform: translateY(-2px);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(93, 173, 226, 0.5);
+  }
+`;
+
+
+const LoginForm = () => {
 
     const [modalShow, setModalShow] = useState(false); 
     const [modalTitle, setModalTitle] = useState(''); 
@@ -45,62 +135,40 @@ const Login = () => {
     }
 
     return (
-      <form onSubmit={handleLogin} class="was-validated">
-        <Container >
-        <h2>Login</h2>
-        <div class="mb-3 mt-3">
-
-          <input type="text" 
-           value={username} 
-           onChange={(e) => setusername(e.target.value)} 
-           class="form-control"
-           id="floatingInput" 
-           placeholder="Enter username" 
-           name="uname" 
-           required 
-           />
-
-          <div class="valid-feedback">Valid.</div>
-          <div class="invalid-feedback">Please fill out this field.</div>
-        </div>
-      <div class="mb-3">
-
-         <input 
-         type="password" 
-         value={password}
-         onChange={(e) => setpassword(e.target.value)}
-         class="form-control"
-         id="floatingPassword" 
-         placeholder="Enter password" 
-         name="pswd" 
-         required 
-         />
-
-         <div class="valid-feedback">Valid.</div>
-         <div class="invalid-feedback">Please fill out this field.</div>
-      </div>
-      <div class="form-check mb-3">
-        <input class="form-check-input" type="checkbox" id="myCheck" name="remember" required />
-        <label class="form-check-label" for="myCheck">I agree on blabla.</label>
-        <div class="valid-feedback">Valid.</div>
-        <div class="invalid-feedback">Check this checkbox to continue.</div>
-     </div>
-
-     <div> 
-      <button onClick={handleLogin} 
-       type="submit" 
-       class="btn btn-primary">Login</button> 
-      <MessageModal 
-      show={modalShow} 
-      handleClose={handleClose} 
-      title={modalTitle} 
-      message={modalMessage} 
-      /> 
-      </div>
+        <Container>
+        <Form onSubmit={handleLogin} className="was-validated">
+            <Title>Login</Title>
+            <Input
+                type="text"
+                value={username}
+                onChange={(e) => setusername(e.target.value)}
+                placeholder="Enter username"
+                name="uname"
+                required
+            />
+            <Input
+                type="password"
+                value={password}
+                onChange={(e) => setpassword(e.target.value)}
+                placeholder="Enter password"
+                name="pswd"
+                required
+            />
+            <Checkbox>
+                <input className="form-check-input" type="checkbox" id="myCheck" name="remember" required />
+                <label className="form-check-label" htmlFor="myCheck">I agree</label>
+            </Checkbox>
+            <Button type="submit">Login</Button>
+            <MessageModal
+                show={modalShow}
+                handleClose={handleClose}
+                title={modalTitle}
+                message={modalMessage}
+            />
+        </Form>
     </Container>
-    </form>
     );
 
 };
 
-export default Login;
+export default LoginForm;
