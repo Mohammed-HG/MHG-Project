@@ -106,16 +106,6 @@ const LoginForm = () => {
     const [password, setpassword] = useState('');
     const navigate = useNavigate();
 
-    useEffect(() => {
-      if (modalShow) {
-        const timer = setTimeout(() => { 
-          handleClose();
-          navigate('/Home');
-        }, 1500);
-        return () => clearTimeout(timer);
-      }
-    },[modalShow, navigate]);
-
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
@@ -123,6 +113,11 @@ const LoginForm = () => {
             setModalTitle('Login Successful');
             setModalMessage(response.data.message || 'Login Successful');
             setModalShow(true);
+            setTimeout(() => { 
+              handleClose();
+              navigate('/Home'); 
+            }, 
+            1500);
             
             if (response.data.token) {
                 localStorage.setItem('token', response.data.token);
