@@ -32,8 +32,9 @@ const handleDelete = async (contact, field, fetchContacts, handleClose) => {
     await axios.delete(`http://127.0.0.1:3000/api/contacts/${contact.contact_id}`, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
-    fetchContacts(); // Refresh the contacts list after deletion
+    fetchContacts();
     handleClose();
+    window.location.reload(); 
   } catch (error) {
     console.error('Error deleting contact:', error);
   }
@@ -49,8 +50,9 @@ const handleEdit = async (contact, field, fetchContacts, handleClose) => {
     await axios.put(`http://127.0.0.1:3000/api/contacts/${contact.contact_id}`, updatedContact, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
-    fetchContacts(); // Refresh the contacts list after editing
+    fetchContacts(); 
     handleClose();
+    window.location.reload(); 
   } catch (error) {
     console.error('Error updating contact:', error);
   }
@@ -66,25 +68,22 @@ const ContactDetailsModal = ({ show, handleClose, contact, fetchContacts }) => {
         <p>
           <strong>First Name:</strong> {contact.FirstName}
           <EditButton onClick={() => handleEdit(contact, 'FirstName', fetchContacts, handleClose)}>Edit</EditButton>
-          <DeleteButton onClick={() => handleDelete(contact, 'FirstName', fetchContacts, handleClose)}>Delete</DeleteButton>
         </p>
         <p>
           <strong>Last Name:</strong> {contact.LastName}
           <EditButton onClick={() => handleEdit(contact, 'LastName', fetchContacts, handleClose)}>Edit</EditButton>
-          <DeleteButton onClick={() => handleDelete(contact, 'LastName', fetchContacts, handleClose)}>Delete</DeleteButton>
         </p>
         <p>
           <strong>Phone Number:</strong> {contact.Phone_Number}
           <EditButton onClick={() => handleEdit(contact, 'Phone_Number', fetchContacts, handleClose)}>Edit</EditButton>
-          <DeleteButton onClick={() => handleDelete(contact, 'Phone_Number', fetchContacts, handleClose)}>Delete</DeleteButton>
         </p>
         <p>
           <strong>Email:</strong> {contact.contact_Email}
           <EditButton onClick={() => handleEdit(contact, 'contact_Email', fetchContacts, handleClose)}>Edit</EditButton>
-          <DeleteButton onClick={() => handleDelete(contact, 'contact_Email', fetchContacts, handleClose)}>Delete</DeleteButton>
         </p>
       </Modal.Body>
       <Modal.Footer>
+      <DeleteButton variant="danger" onClick={() => handleDelete(contact, fetchContacts, handleClose)}>Delete Contact</DeleteButton>
         <Button variant="secondary" onClick={handleClose}>Close</Button>
       </Modal.Footer>
     </Modal>
