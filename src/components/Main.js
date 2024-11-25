@@ -129,15 +129,13 @@ const Main = () => {
         <Table>
           <thead>
             <tr>
-              <Th>First Name</Th>
-              <Th>Last Name</Th>
+              <Th>Contacts Name</Th>
             </tr>
           </thead>
           <tbody>
             {contacts.map((contact) => (
               <tr key={contact.contact_id} onClick={() => handleRowClick(contact)}>
-                <Td>{contact.FirstName}</Td>
-                <Td>{contact.LastName}</Td>
+                <Td>{contact.FirstName} {contact.LastName}</Td>
               </tr>
             ))}
           </tbody>

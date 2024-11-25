@@ -20,14 +20,11 @@ const NavBar = () => {
             <div className="container-fluid">
                 <ul className="navbar-nav">
                     <li className="nav-item">
-                        <a className="nav-link active" href="#">Active</a>
+                        <a className="nav-link active" href="#">Account</a>
                     </li>
                     <button className="nav-link btn btn-link" onClick={handleLogoutClick}> Logout </button>
                     <li className="nav-item">
                         <a className="nav-link" href="#">Link</a>
-                    </li>
-                    <li className="nav-item">
-                        <a className="nav-link disabled" href="#">Disabled</a>
                     </li>
                 </ul>
             </div>
