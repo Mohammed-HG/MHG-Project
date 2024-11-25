@@ -1,0 +1,12 @@
+import styled from 'styled-components';
+
+// Custom Submit Button with Text Changed to "Login"
+const CustomSubmit = styled(Submit)`
+  &&::after {
+    content: 'Login';
+    color: inherit;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+  }
+`;

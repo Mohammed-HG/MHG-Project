@@ -1,34 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { handleLogout } from '../components/Logout';
+import MessageModal from "../components/MessageModal";
 
 const NavBar = () => {
     const navigate = useNavigate();
 
+    const [modalShow, setModalShow] = useState(false);
+    const [modalTitle, setModalTitle] = useState('');
+    const [modalMessage, setModalMessage] = useState('');
+
+    const handleLogoutClick = (e) => {
+        e.preventDefault();
+        handleLogout(navigate, setModalShow, setModalTitle, setModalMessage);
+    };
+
     return (
-        <nav class="navbar navbar-expand-sm bg-dark navbar-light">
-  <div class="container-fluid">
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link active" href="#">Active</a>
-      </li>
-     <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
-      </li>
-    </ul>
-  </div>
-
-  
-<nav class="navbar navbar-expand-sm bg-dark navbar-dark">fffffffffffffff</nav>
-<nav class="navbar navbar-expand-sm bg-primary navbar-dark">ffffffffff</nav>
-</nav>
-
-
+        <nav className="navbar navbar-expand-sm bg-dark navbar-dark">
+            <div className="container-fluid">
+                <ul className="navbar-nav">
+                    <li className="nav-item">
+                        <a className="nav-link active" href="#">Active</a>
+                    </li>
+                    <button className="nav-link btn btn-link" onClick={handleLogoutClick}> Logout </button>
+                    <li className="nav-item">
+                        <a className="nav-link" href="#">Link</a>
+                    </li>
+                    <li className="nav-item">
+                        <a className="nav-link disabled" href="#">Disabled</a>
+                    </li>
+                </ul>
+            </div>
+            <MessageModal
+                show={modalShow}
+                handleClose={() => setModalShow(false)}
+                title={modalTitle}
+                message={modalMessage}
+            />
+        </nav>
     );
 };
 
