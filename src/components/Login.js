@@ -16,30 +16,18 @@ const Container = styled.div`
 `;
 
 const Form = styled.form`
-  background: #ff;
+  background: #fff;
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 400px;
   animation: fadeIn 1s ease-in-out;
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
 `;
 
 const Title = styled.h2`
   text-align: center;
   margin-bottom: 20px;
-  color: #333;
 `;
 
 const Input = styled.input`
@@ -49,7 +37,6 @@ const Input = styled.input`
   border: 1px solid #ddd;
   border-radius: 5px;
   transition: border-color 0.3s;
-
   &:focus {
     border-color: #8e44ad;
     outline: none;
@@ -57,42 +44,25 @@ const Input = styled.input`
   }
 `;
 
-const Checkbox = styled.div`
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-
-  input {
-    margin-right: 10px;
-  }
-
-  label {
-    margin: 0;
-  }
-`;
-
 const Button = styled.button`
   width: 100%;
   padding: 12px;
-  background: #1302339a;
+  background: #8e44ad;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s, transform 0.3s;
-
   &:hover {
     background: #5b6ef4;
     transform: translateY(-2px);
   }
-
   &:focus {
     outline: none;
     box-shadow: 0 0 5px rgba(93, 173, 226, 0.5);
   }
 `;
-
 
 const LoginForm = () => {
 
@@ -106,8 +76,8 @@ const LoginForm = () => {
     const [otpSent, setOtpSent] = useState(false);
     const [contactType, setContactType] = useState('email');
     
-    const [username, setusername] = useState('');
-    const [password, setpassword] = useState('');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
     //handleLogin function to connect with testServer.js Login endpoint
@@ -115,17 +85,8 @@ const LoginForm = () => {
         e.preventDefault();
         try {
             const response = await axios.post('http://127.0.0.1:3000/api/login', {username, password});
-            setModalTitle('Login Successful');
-            setModalMessage(response.data.message || 'Login Successful');
-            setModalShow(true);
-            setTimeout(() => { 
-              handleClose();
-              navigate('/Home'); 
-            }, 
-            1500);
-            
+            setOtpSent(true);
             if (response.data.token) {
-                localStorage.setItem('token', response.data.token);
             }
         } catch(error) {
           setModalTitle('Login Error'); 
@@ -135,40 +96,78 @@ const LoginForm = () => {
     };
 
     //OTP Verify function to connect with testServer.js OTP Verify endpoint
-    const
+    const handleVerifyOtp = async (e) => {
+      e.preventDefault();
+      try {
+        const response = await axios.post('http://127.0.0.1:3000/api/verify-otp', {contact: username, otp});
+        if (response.status === 200) {
+          setModalTitle('Login Successful');
+          setModalMessage(response.data.message || 'Login Successful');
+          setModalShow(true);
+          localStorage.setItem('token', response.data.token);
+          setTimeout(() => { 
+            handleClose();
+            navigate('/Home'); 
+          }, 
+          1500);
+        }
+      } catch (error) { 
+          setModalTitle('OTP Verification Error'); 
+          setModalMessage('Invalid OTP. Please try again.'); 
+          setModalShow(true);
+      }
+    };
 
     return (
-        <Container>
-        <Form onSubmit={handleLogin} className="was-validated">
-            <Title>Login</Title>
-            <Input
-                type="text"
-                value={username}
-                onChange={(e) => setusername(e.target.value)}
-                placeholder="Enter username"
-                name="uname"
-                required
-            />
-            <Input
-                type="password"
-                value={password}
-                onChange={(e) => setpassword(e.target.value)}
-                placeholder="Enter password"
-                name="pswd"
-                required
-            />
-            <Checkbox>
-                <input className="form-check-input" type="checkbox" id="myCheck" name="remember" required />
-                <label className="form-check-label" htmlFor="myCheck">I agree</label>
-            </Checkbox>
-            <Button type="submit">Login</Button>
-            <MessageModal
-                show={modalShow}
-                handleClose={handleClose}
-                title={modalTitle}
-                message={modalMessage}
-            />
-        </Form>
+       <Container> 
+        {!otpSent ? ( 
+          <Form onSubmit={handleLogin} className="was-validated"> 
+              <Title>Login</Title> 
+              <Input 
+                  type="text" 
+                  value={username} 
+                  onChange={(e) => setUsername(e.target.value)} 
+                  placeholder="Enter email or phone number" 
+                  name="uname" 
+                  required 
+              /> 
+              
+              <Input 
+                  type="password" 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  placeholder="Enter password" 
+                  name="pswd" 
+                  required 
+              /> 
+              <Button type="submit">Login</Button> 
+              <MessageModal 
+                  show={modalShow} 
+                  handleClose={handleClose} 
+                  title={modalTitle} 
+                  message={modalMessage} 
+              /> 
+          </Form> 
+        ) : ( 
+        <Form onSubmit={handleVerifyOtp} className="was-validated"> 
+            <Title>Enter OTP</Title> 
+            <Input 
+                type="text" 
+                value={otp} 
+                onChange={(e) => setOtp(e.target.value)} 
+                placeholder="Enter OTP" 
+                name="otp" 
+                required 
+            /> 
+            <Button type="submit">Verify OTP</Button> 
+            <MessageModal 
+                show={modalShow} 
+                handleClose={handleClose} 
+                title={modalTitle} 
+                message={modalMessage} 
+                /> 
+          </Form> 
+        )}
     </Container>
     );
 
