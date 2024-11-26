@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
+const nodemailer = require('nodemailer'); 
+const crypto = require('crypto');
 const router = express.Router();
 const cors = require('cors');
 
@@ -10,6 +12,8 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+let userOTP = {}; // Store OTPs temporarily
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -33,6 +37,37 @@ db.connect ((err) => {
         console.log('Connected to the database!');
     }
 });
+
+//Send OTP via email function
+const sendOTPEmail = (email, otp) => {
+    const trasporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'your-email@gmail.com',
+            pass: 'your-email-password',
+        },
+    });
+
+    const mailOption = {
+        from: 'your-email@gmail.com',
+        to: email,
+        subject: 'your OTP Code',
+        text: `Your OTP code is ${otp}`,
+    };
+
+    trasporter.sendMail(mailOption, (error, info) => {
+        if (error) {
+            console.log('Error sending OTP to Email, error');
+        } else {
+            console.log('OTP email send', info.response);
+        }
+    });
+};
+
+//Send OTP via phone function (Placeholder)
+const sendOTPSMS = (phone, otp) => {
+    console.log(`Sending OTP ${otp} to phone number ${phone}`);
+};
 
 //Register endpoint 
 app.post('/api/register', async (req, res) => {
@@ -86,6 +121,31 @@ router.post('/api/logout', (req, res) => {
 });
 
 module.exports = router;
+
+//Send OTP endpoint
+app.post('/api/send-otp', (req, res) => {
+    const { contact, type } = req.body;
+    const otp = crypto.randomInt(100000, 999999).toString();
+    userOTP[contact] = otp;
+
+    if (type === 'email') {
+        sendOTPEmail(contact, otp);
+    } else if (type === 'phone') {
+        sendOTPSMS(contact, otp);
+    }
+    res.status(200).send('OTP Sent');
+});
+
+//Verify OTP endpoint
+app.post('/api/verify-otp', (req, res) => {
+    const { contact, otp} = req.body;
+    if (userOTP[contact] === otp) {
+        delete userOTP[contact];
+        res.status(200).send('OTP Verified');
+    } else {
+        res.status(400).send('Invalid OTP');
+    }
+});
 
 //Get All\Search endpoint
 app.get('/api/contacts', authenticateToken, (req, res) => {
@@ -205,14 +265,6 @@ app.delete('/api/contacts/:contact_id', authenticateToken ,(req, res) => {
     });
 });
 
-// Session middleware setup
-app.use(session({
-    secret: 'your_secret_key',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secret: false }
-  }))
- 
 //MiddleWare function
 function authenticateToken(req, res, next) {
     const authHeader = req.header('Authorization')
