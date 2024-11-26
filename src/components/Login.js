@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import MessageModal from './MessageModal';
@@ -101,11 +101,16 @@ const LoginForm = () => {
     const [modalMessage, setModalMessage] = useState(''); 
 
     const handleClose = () => setModalShow(false);
+
+    const [otp, setOtp] = useState('');
+    const [otpSent, setOtpSent] = useState(false);
+    const [contactType, setContactType] = useState('email');
     
     const [username, setusername] = useState('');
     const [password, setpassword] = useState('');
     const navigate = useNavigate();
 
+    //handleLogin function to connect with testServer.js Login endpoint
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
@@ -127,7 +132,10 @@ const LoginForm = () => {
           setModalMessage('Username OR Password Invaild');
           setModalShow(true);
         }
-    }
+    };
+
+    //OTP Verify function to connect with testServer.js OTP Verify endpoint
+    const
 
     return (
         <Container>

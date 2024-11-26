@@ -116,6 +116,7 @@ const LoginForm = () => {
       }
     },[modalShow, navigate]);
 
+    //Register function to connect with testServer.js Register endpoint
     const handleRegister = async (e) => {
         e.preventDefault();
         try {

@@ -87,6 +87,7 @@ const Main = () => {
         fetchContacts();
     }, []);
 
+    //fetchContacts function to connect with testServer.js Get All/Search endpoint
     const fetchContacts = async () => {
         const token = localStorage.getItem('token');
         if (!token) {

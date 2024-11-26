@@ -26,6 +26,7 @@ const DeleteButton = styled(Button)`
   }
 `;
 
+//handleDelete function to connect with testServer.js Delete Contact endpoint
 const handleDelete = async (contact, field, fetchContacts, handleClose) => {
   const token = localStorage.getItem('token');
   try {
@@ -40,6 +41,7 @@ const handleDelete = async (contact, field, fetchContacts, handleClose) => {
   }
 };
 
+//handleEdit function to connect with testServer.js Update Contact endpoint
 const handleEdit = async (contact, field, fetchContacts, handleClose) => {
   const token = localStorage.getItem('token');
   const updatedContact = {
