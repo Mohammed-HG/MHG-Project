@@ -2,6 +2,7 @@ import React, {useState} from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom";
 
+//AddContact function to connect with testServer.js Insert New Contact endpoint
 const AddContact = () => {
     const [contacts, setContacts] = useState([]);
     const [newContact, setnewContact] = useState({FirstName: '', LastName: '', Phone_Number: '', contact_Email: ''});
