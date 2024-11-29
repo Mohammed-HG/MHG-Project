@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import MessageModal from './MessageModal';
 import styled from 'styled-components';
+import MessageModal from './MessageModal';
 
 const Container = styled.div`
   display: flex;
@@ -83,144 +83,147 @@ const ResendButton = styled(Button)`
 `;
 
 const LoginForm = () => {
-    const [modalShow, setModalShow] = useState(false); 
-    const [modalTitle, setModalTitle] = useState(''); 
-    const [modalMessage, setModalMessage] = useState(''); 
-    const handleClose = () => setModalShow(false);
-    const navigate = useNavigate();
+  const [modalShow, setModalShow] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
+  const handleClose = () => setModalShow(false);
+  const navigate = useNavigate();
 
-    const [otp, setOtp] = useState('');
-    const [otpSent, setOtpSent] = useState(false);
-    const [contact, setContact] = useState(''); // email or phone number
-    const [counter, setCounter] = useState(10);
-    const [resendDisabled, setResendDisabled] = useState(true);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [contact, setContact] = useState(''); // email or phone number
+  const [counter, setCounter] = useState(10);
+  const [resendDisabled, setResendDisabled] = useState(true);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-    useEffect(() => {
-        let timer;
-        if (otpSent && counter > 0) {
-            timer = setTimeout(() => {
-                setCounter(counter - 1);
-            }, 1000);
-        } else if (counter === 0) {
-            setResendDisabled(false);
-        }
-        return () => clearTimeout(timer);
-    }, [otpSent, counter]);
+  useEffect(() => {
+    let timer;
+    if (otpSent && counter > 0) {
+      timer = setTimeout(() => {
+        setCounter(counter - 1);
+      }, 1000);
+    } else if (counter === 0) {
+      setResendDisabled(false);
+    }
+    return () => clearTimeout(timer);
+  }, [otpSent, counter]);
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post('http://127.0.0.1:3000/api/login', { username, password });
-            if (response.data.token) {
-                await axios.post('http://127.0.0.1:3000/api/send-otp', { contact, type: 'email' });
-                setOtpSent(true);
-                setCounter(10);
-                setResendDisabled(true);
-                setModalTitle('OTP Sent');
-                setModalMessage('An OTP has been sent to your email or phone number.');
-                setModalShow(true);
-            }
-        } catch (error) {
-            setModalTitle('Login Error'); 
-            setModalMessage('Invalid username or password. Please try again.');
-            setModalShow(true);
-        }
-    };
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://127.0.0.1:3000/api/login', { username, password });
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        await axios.post('http://127.0.0.1:3000/api/send-otp', { contact, type: 'phone' });
+        setOtpSent(true);
+        setCounter(10);
+        setResendDisabled(true);
+        setModalTitle('OTP Sent');
+        setModalMessage('An OTP has been sent to your phone number.');
+        setModalShow(true);
+      }
+    } catch (error) {
+      setModalTitle('Login Error');
+      setModalMessage('Invalid username or password. Please try again.');
+      setModalShow(true);
+    }
+  };
 
-    const handleVerifyOtp = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post('http://127.0.0.1:3000/api/verify-otp', { contact, otp });
-            if (response.status === 200) {
-                setModalTitle('Login Successful');
-                setModalMessage('OTP verified successfully.');
-                setModalShow(true);
-                localStorage.setItem('token', response.data.token);
-                setTimeout(() => { 
-                    handleClose();
-                    navigate('/Home'); 
-                }, 1500);
-            }
-        } catch (error) { 
-            setModalTitle('OTP Verification Error'); 
-            setModalMessage('Invalid OTP. Please try again.'); 
-            setModalShow(true);
-        }
-    };
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post('http://127.0.0.1:3000/api/verify-otp', { contact, otp }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.status === 200) {
+        setModalTitle('Login Successful');
+        setModalMessage('OTP verified successfully.');
+        setModalShow(true);
+        setTimeout(() => {
+          handleClose();
+          navigate('/Home');
+        }, 1500);
+      }
+    } catch (error) {
+      setModalTitle('OTP Verification Error');
+      setModalMessage('Invalid OTP. Please try again.');
+      setModalShow(true);
+    }
+  };
 
-    const handleResendOtp = async () => {
-        try {
-            await axios.post('http://127.0.0.1:3000/api/send-otp', { contact, type: 'email' });
-            setModalTitle('OTP Sent');
-            setModalMessage('A new OTP has been sent to your email or phone.');
-            setModalShow(true);
-            setCounter(10);
-            setResendDisabled(true);
-        } catch (error) {
-            setModalTitle('Error');
-            setModalMessage('Failed to resend OTP. Please try again.');
-            setModalShow(true);
-        }      
-    };
+  const handleResendOtp = async () => {
+    try {
+      await axios.post('http://127.0.0.1:3000/api/send-otp', { contact, type: 'email' });
+      setModalTitle('OTP Sent');
+      setModalMessage('A new OTP has been sent to your email or phone.');
+      setModalShow(true);
+      setCounter(10);
+      setResendDisabled(true);
+    } catch (error) {
+      setModalTitle('Error');
+      setModalMessage('Failed to resend OTP. Please try again.');
+      setModalShow(true);
+    }
+  };
 
-    return (
-        <Container>
-            <Form onSubmit={handleLogin} className="was-validated">
-                <Title>Login</Title>
-                <Input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Enter username"
-                    name="uname"
-                    required
-                />
-                <Input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter password"
-                    name="pswd"
-                    required
-                />
-                <Input
-                    type="text"
-                    value={contact}
-                    onChange={(e) => setContact(e.target.value)}
-                    placeholder="Verify by email or phone number"
-                    name="contact"
-                    required
-                />
-                {otpSent && (
-                    <>
-                        <InputGroup>
-                            <Input
-                                type="text"
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value)}
-                                placeholder="Enter OTP"
-                                name="otp"
-                                required 
-                            />
-                            <SmallButton type="button" onClick={handleVerifyOtp}>Verify</SmallButton>
-                        </InputGroup>
-                        <ResendButton type="button" onClick={handleResendOtp} disabled={resendDisabled}>
-                            {resendDisabled ? `Resend OTP in ${counter}s` : 'Resend OTP'}
-                        </ResendButton>
-                    </>
-                )}
-                {!otpSent && <Button type="submit">Login</Button>}
-                <MessageModal
-                    show={modalShow}
-                    handleClose={handleClose}
-                    title={modalTitle}
-                    message={modalMessage}
-                />
-            </Form>
-        </Container>
-    );
+  return (
+    <Container>
+      <Form onSubmit={handleLogin} className="was-validated">
+        <Title>Login</Title>
+        <Input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Enter username"
+          name="uname"
+          required
+        />
+        <Input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Enter password"
+          name="pswd"
+          required
+        />
+        <Input
+          type="text"
+          value={contact}
+          onChange={(e) => setContact(e.target.value)}
+          placeholder="Verify by email or phone number"
+          name="contact"
+          required
+        />
+        {otpSent && (
+          <>
+            <InputGroup>
+              <Input
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                placeholder="Enter OTP"
+                name="otp"
+                required
+              />
+              <SmallButton type="button" onClick={handleVerifyOtp}>Verify</SmallButton>
+            </InputGroup>
+            <ResendButton type="button" onClick={handleResendOtp} disabled={resendDisabled}>
+              {resendDisabled ? `Resend OTP in ${counter}s` : 'Resend OTP'}
+            </ResendButton>
+          </>
+        )}
+        {!otpSent && <Button type="submit">Login</Button>}
+        <MessageModal
+          show={modalShow}
+          handleClose={handleClose}
+          title={modalTitle}
+          message={modalMessage}
+        />
+      </Form>
+    </Container>
+  );
 };
 
 export default LoginForm;
