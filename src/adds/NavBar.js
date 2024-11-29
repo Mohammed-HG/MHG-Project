@@ -54,4 +54,23 @@ const NavBar = () => {
           <li className="nav-item">
             <a className="nav-link active" href="#">Account</a>
           </li>
-          <button className="nav-link btn btn-link" onClick
+          <button className="nav-link btn btn-link" onClick={handleLogoutClick}> Logout </button>
+          <li className="nav-item">
+            <a className="nav-link" href="#">Link</a>
+          </li>
+        </ul>
+        <AddButton onClick={handleButtonClick}>
+          <FaPlus />
+        </AddButton>
+      </div>
+      <MessageModal
+        show={modalShow}
+        handleClose={() => setModalShow(false)}
+        title={modalTitle}
+        message={modalMessage}
+      />
+    </nav>
+  );
+};
+
+export default NavBar;
