@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//DataBase Connection
+// DataBase Connection
 const db = mysql.createConnection({
 
     host: '127.0.0.1',
@@ -38,38 +38,12 @@ db.connect ((err) => {
     }
 });
 
-//Send OTP via email function
-const sendOTPEmail = (email, otp) => {
-    const trasporter = nodemailer.createTransport({
-        service: 'Gmail',
-        auth: {
-            user: 'your-email@gmail.com',
-            pass: 'your-email-password',
-        },
-    });
-
-    const mailOption = {
-        from: 'your-email@gmail.com',
-        to: email,
-        subject: 'your OTP Code',
-        text: `Your OTP code is ${otp}`,
-    };
-
-    trasporter.sendMail(mailOption, (error, info) => {
-        if (error) {
-            console.log('Error sending OTP to Email, error');
-        } else {
-            console.log('OTP email send', info.response);
-        }
-    });
-};
-
-//Send OTP via phone function (Placeholder)
+// Send OTP via phone function (Placeholder)
 const sendOTPSMS = (phone, otp) => {
     console.log(`Sending OTP ${otp} to phone number ${phone}`);
 };
 
-//Register endpoint 
+// Register endpoint 
 app.post('/api/register', async (req, res) => {
     const {username, password} = req.body;
     const hashedPassword = await bcrypt.hash(password,10);
@@ -84,7 +58,7 @@ app.post('/api/register', async (req, res) => {
     })
 })
 
-//Login endpoint
+// Login endpoint
 app.post('/api/login', async (req, res) => {
     const {username, password} = req.body;
     const sql = 'Select * From `users` Where UserName = ?';
@@ -109,7 +83,7 @@ app.post('/api/login', async (req, res) => {
     })
 })
 
-//Logout endpoint
+// Logout endpoint
 router.post('/api/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -122,32 +96,27 @@ router.post('/api/logout', (req, res) => {
 
 module.exports = router;
 
-//Send OTP endpoint
-app.post('/api/send-otp', (req, res) => {
-    const { contact, type } = req.body;
-    const otp = crypto.randomInt(100000, 999999).toString();
-    userOTP[contact] = otp;
+// Send OTP endpoint 
+app.post('/api/send-otp', (req, res) => { 
+    const { contact, type } = req.body; 
+    const otp = crypto.randomInt(100000, 999999).toString(); 
+    userOTP[contact] = otp; 
 
-    if (type === 'email') {
-        sendOTPEmail(contact, otp);
-    } else if (type === 'phone') {
-        sendOTPSMS(contact, otp);
-    }
-    res.status(200).send('OTP Sent');
+    sendOTPSMS(contact, otp); 
+    res.status(200).send('OTP Sent'); 
+
+}); // Verify OTP endpoint 
+app.post('/api/verify-otp', authenticateToken, (req, res) => { 
+    const { contact, otp } = req.body; 
+        if (userOTP[contact] === otp) { 
+            delete userOTP[contact]; 
+            res.status(200).send('OTP Verified'); 
+        } else { 
+            res.status(400).send('Invalid OTP'); 
+        }
 });
 
-//Verify OTP endpoint
-app.post('/api/verify-otp', (req, res) => {
-    const { contact, otp} = req.body;
-    if (userOTP[contact] === otp) {
-        delete userOTP[contact];
-        res.status(200).send('OTP Verified');
-    } else {
-        res.status(400).send('Invalid OTP');
-    }
-});
-
-//Get All\Search endpoint
+// Get All\Search endpoint
 app.get('/api/contacts', authenticateToken, (req, res) => {
     const { FirstName, LastName, Phone_Number, contact_Email } = req.query;
     const userId = req.user.userId;
@@ -192,7 +161,7 @@ app.get('/api/contacts', authenticateToken, (req, res) => {
     });
 });
 
-//Insert New Contact endpoint   
+// Insert New Contact endpoint   
 app.post('/api/contacts', authenticateToken, (req, res) => {
     const { FirstName, LastName, Phone_Number, contact_Email } = req.body;
     const userId = req.user.userId;
@@ -210,7 +179,7 @@ app.post('/api/contacts', authenticateToken, (req, res) => {
     })
 })
 
-//Search by Id endpoint
+// Search by Id endpoint
 app.get ('/api/contacts/:contact_id', authenticateToken, (req, res) => {
     const ContactId = req.params.contact_id;
     const userId = req.user.userId;
@@ -228,7 +197,7 @@ app.get ('/api/contacts/:contact_id', authenticateToken, (req, res) => {
     });
 });
 
-//Update Contact endpoint
+// Update Contact endpoint
 app.put ('/api/contacts/:contact_id', authenticateToken, (req, res) => {
     const ContactId = req.params.contact_id;
     const userId = req.user.userId;
@@ -247,7 +216,7 @@ app.put ('/api/contacts/:contact_id', authenticateToken, (req, res) => {
      });
 });
 
-//Delete Contact endpoint
+// Delete Contact endpoint
 app.delete('/api/contacts/:contact_id', authenticateToken ,(req, res) => {
     const ContactId = req.params.contact_id;
     const userId = req.user.userId; 
@@ -265,7 +234,7 @@ app.delete('/api/contacts/:contact_id', authenticateToken ,(req, res) => {
     });
 });
 
-//MiddleWare function
+// MiddleWare function
 function authenticateToken(req, res, next) {
     const authHeader = req.header('Authorization')
     const token = authHeader && authHeader.split(' ') [1];
