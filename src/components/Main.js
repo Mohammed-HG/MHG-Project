@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import NavBar from '../adds/NavBar';
 import MessageModal from './MessageModal';
 import ContactDetailsModal from './ContactDetailsModal';
-import { FaPlus, FaSearch, FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa'; // Importing icons
+import { FaPlus, FaSearch, FaPhone, FaEnvelope } from 'react-icons/fa';
 
 const Container = styled.div`
   display: flex;
