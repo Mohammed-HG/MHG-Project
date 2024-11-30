@@ -86,14 +86,17 @@ const LoginForm = () => {
   const [modalShow, setModalShow] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
+
   const handleClose = () => setModalShow(false);
   const navigate = useNavigate();
 
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [contact, setContact] = useState(''); // email or phone number
+
   const [counter, setCounter] = useState(10);
   const [resendDisabled, setResendDisabled] = useState(true);
+  
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 

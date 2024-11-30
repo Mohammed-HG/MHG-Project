@@ -5,6 +5,7 @@ import Main from './components/Main';
 import AddContact from './components/AddContact';
 import Login from './components/Login';
 import Register from './components/Register';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
   return (

@@ -171,11 +171,12 @@ const Main = () => {
   const [modalShow, setModalShow] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
-  const [contacts, setContacts] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(''); // State to hold search term
-  const [selectedContact, setSelectedContact] = useState(null);
-  const navigate = useNavigate();
 
+  const [contacts, setContacts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(''); 
+  const [selectedContact, setSelectedContact] = useState(null);
+
+  const navigate = useNavigate();
   const handleClose = () => {
     setModalShow(false);
     setSelectedContact(null);

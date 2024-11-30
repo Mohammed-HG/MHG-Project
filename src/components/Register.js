@@ -85,16 +85,19 @@ const ResendButton = styled(Button)`
 const RegisterForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
+
   const [counter, setCounter] = useState(10);
   const [resendDisabled, setResendDisabled] = useState(true);
+
   const [modalShow, setModalShow] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
+  
   const navigate = useNavigate();
-
   const handleClose = () => setModalShow(false);
 
   const handleRegister = async (e) => {
