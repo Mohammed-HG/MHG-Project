@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { handleLogout } from '../components/Logout';
-import MessageModal from './MessageModal';
+import MessageModal from '../components/MessageModal';
 import styled from 'styled-components';
 import { FaPlus } from 'react-icons/fa'; // Importing the plus icon
 
