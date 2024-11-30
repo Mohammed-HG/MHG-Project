@@ -5,12 +5,13 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const nodemailer = require('nodemailer'); 
 const crypto = require('crypto');
-const router = express.Router();
 const cors = require('cors');
+const session = require('express-session');
 
 require('dotenv').config();
 
 const app = express();
+const router = express.Router(); // Use the router
 const PORT = process.env.PORT || 3000;
 
 let userOTP = {}; // Store OTPs temporarily
@@ -19,6 +20,12 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(session({ 
+    secret: 'your_session_secret', // Change this to a secure secret 
+    resave: false, 
+    saveUninitialized: true, 
+    cookie: { secure: false } // Set to true if using HTTPS 
+    }));
 
 // DataBase Connection
 const db = mysql.createConnection({
@@ -93,8 +100,7 @@ router.post('/api/logout', (req, res) => {
         res.status(200).json({ message: 'Logged out Succssfully' });
     });
 });
-
-module.exports = router;
+app.use(router);
 
 // Send OTP endpoint 
 app.post('/api/send-otp', (req, res) => { 
