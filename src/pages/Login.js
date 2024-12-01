@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import MessageModal from './MessageModal';
+import MessageModal from '../components/MessageModal';
 
 const Container = styled.div`
   display: flex;
@@ -96,7 +96,7 @@ const LoginForm = () => {
 
   const [counter, setCounter] = useState(10);
   const [resendDisabled, setResendDisabled] = useState(true);
-  
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -125,6 +125,9 @@ const LoginForm = () => {
         setModalTitle('OTP Sent');
         setModalMessage('An OTP has been sent to your phone number.');
         setModalShow(true);
+        setTimeout(() => {
+            handleClose();
+          }, 2000);
       }
     } catch (error) {
       setModalTitle('Login Error');
@@ -147,7 +150,7 @@ const LoginForm = () => {
         setTimeout(() => {
           handleClose();
           navigate('/Home');
-        }, 1500);
+        }, 1000);
       }
     } catch (error) {
       setModalTitle('OTP Verification Error');
@@ -164,6 +167,10 @@ const LoginForm = () => {
       setModalShow(true);
       setCounter(10);
       setResendDisabled(true);
+      setTimeout(() => {
+        handleClose();
+      }, 2000);
+
     } catch (error) {
       setModalTitle('Error');
       setModalMessage('Failed to resend OTP. Please try again.');
