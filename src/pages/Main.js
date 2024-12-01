@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import NavBar from '../adds/NavBar';
-import MessageModal from './MessageModal';
-import ContactDetailsModal from './ContactDetailsModal';
+import NavBar from '../components/NavBar';
+import MessageModal from '../components/MessageModal';
+import ContactDetailsModal from '../components/ContactDetailsModal';
 import { FaPlus, FaSearch, FaPhone, FaEnvelope } from 'react-icons/fa';
 
 const Container = styled.div`
@@ -22,20 +22,27 @@ const Container = styled.div`
 const Title = styled.h1`
   text-align: center;
   margin-bottom: 20px;
-  color: #ffffff;
+  color: #000000;
 `;
 
 const Content = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #ffffff;
+  background: #ff;
   padding: 30px;
   border-radius: 15px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   max-width: 600px;
   width: 100%;
   margin: 0 auto; /* Center the container */
+`;
+
+const ActionContainer = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  margin-bottom: 20px;
 `;
 
 const SearchContainer = styled.div`
@@ -79,7 +86,7 @@ const SearchButton = styled.button`
 `;
 
 const CardContainer = styled.div`
-  background: #f8f9fa;
+  background: #ff;
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -92,7 +99,7 @@ const CardContainer = styled.div`
 `;
 
 const Card = styled.div`
-  background: #ffffff;
+  background: #336;
   border-radius: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   padding: 15px; /* Adjusting padding to make it smaller */
@@ -132,7 +139,7 @@ const CardTitle = styled.h2`
 
 const CardDetail = styled.p`
   margin: 5px 0;
-  color: #555;
+  color: #888;
   display: flex;
   align-items: center;
 `;
@@ -153,7 +160,6 @@ const AddButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
   transition: background-color 0.3s, transform 0.3s;
 
   &:hover {
@@ -227,12 +233,21 @@ const Main = () => {
     setModalShow(true);
   };
 
+  const handleButtonClick = () => {
+    navigate('/Add-Contact');
+  };
+
   return (
     <>
       <NavBar />
       <Container>
         <Content>
           <Title>Contacts</Title>
+          <ActionContainer>
+            <AddButton onClick={handleButtonClick}>
+              <FaPlus />
+            </AddButton>
+          </ActionContainer>
           <SearchContainer>
             <SearchInput
               type="text"
