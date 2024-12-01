@@ -173,7 +173,7 @@ const Main = () => {
   const [modalMessage, setModalMessage] = useState('');
 
   const [contacts, setContacts] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(''); 
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedContact, setSelectedContact] = useState(null);
 
   const navigate = useNavigate();
@@ -191,7 +191,7 @@ const Main = () => {
     const token = localStorage.getItem('token');
     if (!token) {
       setModalTitle('Authentication Error');
-      setModalMessage('Authentication token Expired. Please login.');
+      setModalMessage('Authentication token expired. Please log in.');
       setModalShow(true);
       return;
     }
@@ -227,67 +227,62 @@ const Main = () => {
     setModalShow(true);
   };
 
-  const handleButtonClick = () => {
-    navigate('/Add-Contact');
-  };
-
   return (
-    <Container>
+    <>
       <NavBar />
-      <AddButton onClick={handleButtonClick}>
-        <FaPlus />
-      </AddButton>
-      <Content>
-        <Title>Contacts</Title>
-        <SearchContainer>
-          <SearchInput
-            type="text"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            placeholder="Search contacts"
-          />
-          <SearchButton onClick={handleSearchSubmit}>
-            <FaSearch />
-          </SearchButton>
-        </SearchContainer>
-        <CardContainer>
-          {contacts.map((contact) => (
-            <Card key={contact.contact_id} onClick={() => handleRowClick(contact)}>
-              <ProfilePicture>{contact.FirstName.charAt(0)}</ProfilePicture>
-              <CardContent>
-                <CardTitle>{contact.FirstName} {contact.LastName}</CardTitle>
-                <CardDetail>
-                  <CardIcon>
-                    <FaPhone />
-                  </CardIcon>
-                  {contact.Phone_Number}
-                </CardDetail>
-                <CardDetail>
-                  <CardIcon>
-                    <FaEnvelope />
-                  </CardIcon>
-                  {contact.contact_Email}
-                </CardDetail>
-              </CardContent>
-            </Card>
-          ))}
-        </CardContainer>
-      </Content>
-      <MessageModal
-        show={modalShow}
-        handleClose={handleClose}
-        title={modalTitle}
-        message={modalMessage}
-      />
-      {selectedContact && (
-        <ContactDetailsModal
+      <Container>
+        <Content>
+          <Title>Contacts</Title>
+          <SearchContainer>
+            <SearchInput
+              type="text"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              placeholder="Search contacts"
+            />
+            <SearchButton onClick={handleSearchSubmit}>
+              <FaSearch />
+            </SearchButton>
+          </SearchContainer>
+          <CardContainer>
+            {contacts.map((contact) => (
+              <Card key={contact.contact_id} onClick={() => handleRowClick(contact)}>
+                <ProfilePicture>{contact.FirstName.charAt(0)}</ProfilePicture>
+                <CardContent>
+                  <CardTitle>{contact.FirstName} {contact.LastName}</CardTitle>
+                  <CardDetail>
+                    <CardIcon>
+                      <FaPhone />
+                    </CardIcon>
+                    {contact.Phone_Number}
+                  </CardDetail>
+                  <CardDetail>
+                    <CardIcon>
+                      <FaEnvelope />
+                    </CardIcon>
+                    {contact.contact_Email}
+                  </CardDetail>
+                </CardContent>
+              </Card>
+            ))}
+          </CardContainer>
+        </Content>
+        <MessageModal
           show={modalShow}
           handleClose={handleClose}
-          contact={selectedContact}
-          fetchContacts={fetchContacts} // Pass down fetchContacts to refresh the contacts list
+          title={modalTitle}
+          message={modalMessage}
         />
-      )}
-    </Container>
+        {selectedContact && (
+          <ContactDetailsModal
+            show={modalShow}
+            handleClose={handleClose}
+            contact={selectedContact}
+            fetchContacts={fetchContacts} // Pass down fetchContacts to refresh the contacts list
+          />
+        )}
+      </Container>
+    </>
   );
 };
 
