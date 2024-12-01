@@ -1,36 +1,24 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Index from './components/Index';
-import Register from './components/Register';
-import Login from './components/Login';
 import Main from './components/Main';
 import AddContact from './components/AddContact';
-import NavBar from './adds/NavBar';
-import MessageModal from './components/MessageModal';
-import Logout from './components/Logout';
+import Login from './components/Login';
+import Register from './components/Register';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '@react-login-page/page5';
 
-function App() {
+const App = () => {
   return (
-    <Router> 
-      <div className="App">
+    <Router>
       <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/Home" element={<Main />} />
-          <Route path="/Add-Contact" element={<AddContact />} />
-          <Route path="/NavBar" element={<NavBar />} />
-          <Route path="/MessageModal" element={<MessageModal />} />
-
-        </Routes>
-      </div>
+        <Route path="/" element={<Index />} />
+        <Route path="/Home" element={<Main />} />
+        <Route path="/Add-Contact" element={<AddContact />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
     </Router>
-    
   );
-}
+};
 
 export default App;
