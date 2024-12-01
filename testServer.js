@@ -5,12 +5,13 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const nodemailer = require('nodemailer'); 
 const crypto = require('crypto');
-const router = express.Router();
 const cors = require('cors');
+const session = require('express-session');
 
 require('dotenv').config();
 
 const app = express();
+const router = express.Router(); // Use the router
 const PORT = process.env.PORT || 3000;
 
 let userOTP = {}; // Store OTPs temporarily
@@ -19,6 +20,12 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(session({ 
+    secret: 'your_session_secret', // Change this to a secure secret 
+    resave: false, 
+    saveUninitialized: true, 
+    cookie: { secure: false } // Set to true if using HTTPS 
+    }));
 
 // DataBase Connection
 const db = mysql.createConnection({
@@ -93,8 +100,7 @@ router.post('/api/logout', (req, res) => {
         res.status(200).json({ message: 'Logged out Succssfully' });
     });
 });
-
-module.exports = router;
+app.use(router);
 
 // Send OTP endpoint 
 app.post('/api/send-otp', (req, res) => { 
@@ -118,48 +124,26 @@ app.post('/api/verify-otp', authenticateToken, (req, res) => {
 
 // Get All\Search endpoint
 app.get('/api/contacts', authenticateToken, (req, res) => {
-    const { FirstName, LastName, Phone_Number, contact_Email } = req.query;
+    const { search } = req.query;  // Using 'search' as the query parameter
     const userId = req.user.userId;
-    let sql = 'SELECT `contacts`.*, `users`.UserName FROM `contacts` LEFT JOIN `users` ON `contacts`.UserId = `users`.UserId WHERE `contacts`.UserId = ?';
+    let sql = 'SELECT * FROM `contacts` WHERE `UserId` = ?';
     const params = [userId];
 
-        const conditions = [];
+    if (search) {
+        sql += ' AND (`FirstName` LIKE ? OR `LastName` LIKE ? OR `Phone_Number` LIKE ? OR `contact_Email` LIKE ?)';
+        const searchPattern = `%${search}%`;
+        params.push(searchPattern, searchPattern, searchPattern, searchPattern);
+    }
 
-        if (FirstName) {
-            conditions.push(' `FirstName` LIKE ?');
-            params.push(`%${FirstName}%`);
-        }
-
-        if (LastName) {
-            conditions.push(' `LastName` LIKE ?');
-            params.push(`%${LastName}%`);
-        }
-
-        if (Phone_Number) {
-            conditions.push(' `Phone_Number` LIKE ?');
-            params.push(`%${Phone_Number}%`);
-        }
-
-        if (contact_Email) {
-            conditions.push(' `contact_Email` LIKE ?');
-            params.push(`%${contact_Email}%`);
-        }
-
-        if (conditions.length > 0) {
-            sql += ' AND ' + conditions.join(' AND ');
-        }
-    
-    sql += ' ORDER BY `users`.UserName'
-
-    db.query(sql, params, (err, results) => {    
+    db.query(sql, params, (err, results) => {
         if (err) {
             console.error('Error fetching data:', err);
-            res.status(500).json({ error: 'Internal server error' });
-        } else {
-            res.json(results);
+            return res.status(500).json({ error: 'Internal server error' });
         }
+        res.json(results);
     });
 });
+
 
 // Insert New Contact endpoint   
 app.post('/api/contacts', authenticateToken, (req, res) => {
