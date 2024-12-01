@@ -124,48 +124,26 @@ app.post('/api/verify-otp', authenticateToken, (req, res) => {
 
 // Get All\Search endpoint
 app.get('/api/contacts', authenticateToken, (req, res) => {
-    const { FirstName, LastName, Phone_Number, contact_Email } = req.query;
+    const { search } = req.query;  // Using 'search' as the query parameter
     const userId = req.user.userId;
-    let sql = 'SELECT `contacts`.*, `users`.UserName FROM `contacts` LEFT JOIN `users` ON `contacts`.UserId = `users`.UserId WHERE `contacts`.UserId = ?';
+    let sql = 'SELECT * FROM `contacts` WHERE `UserId` = ?';
     const params = [userId];
 
-        const conditions = [];
+    if (search) {
+        sql += ' AND (`FirstName` LIKE ? OR `LastName` LIKE ? OR `Phone_Number` LIKE ? OR `contact_Email` LIKE ?)';
+        const searchPattern = `%${search}%`;
+        params.push(searchPattern, searchPattern, searchPattern, searchPattern);
+    }
 
-        if (FirstName) {
-            conditions.push(' `FirstName` LIKE ?');
-            params.push(`%${FirstName}%`);
-        }
-
-        if (LastName) {
-            conditions.push(' `LastName` LIKE ?');
-            params.push(`%${LastName}%`);
-        }
-
-        if (Phone_Number) {
-            conditions.push(' `Phone_Number` LIKE ?');
-            params.push(`%${Phone_Number}%`);
-        }
-
-        if (contact_Email) {
-            conditions.push(' `contact_Email` LIKE ?');
-            params.push(`%${contact_Email}%`);
-        }
-
-        if (conditions.length > 0) {
-            sql += ' AND ' + conditions.join(' AND ');
-        }
-    
-    sql += ' ORDER BY `users`.UserName'
-
-    db.query(sql, params, (err, results) => {    
+    db.query(sql, params, (err, results) => {
         if (err) {
             console.error('Error fetching data:', err);
-            res.status(500).json({ error: 'Internal server error' });
-        } else {
-            res.json(results);
+            return res.status(500).json({ error: 'Internal server error' });
         }
+        res.json(results);
     });
 });
+
 
 // Insert New Contact endpoint   
 app.post('/api/contacts', authenticateToken, (req, res) => {
