@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import MessageModal from './MessageModal';
+import MessageModal from '../components/MessageModal';
 
 const Container = styled.div`
   display: flex;
@@ -170,7 +170,7 @@ const LoginForm = () => {
       setTimeout(() => {
         handleClose();
       }, 2000);
-      
+
     } catch (error) {
       setModalTitle('Error');
       setModalMessage('Failed to resend OTP. Please try again.');
