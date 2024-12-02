@@ -137,6 +137,25 @@ router.get('/api/users', authenticateToken, (req, res) => {
     });
 });
 
+//Get (Me) User endpoint
+router.get('/api/users/me', authenticateToken, (req, res) => {
+    const userId = req.user.id; // Accessing user ID from the token    
+    const sql = 'Select `UserName`, `UserId` From `users` Where `UserId` = ?';
+
+    db.query(sql, [userId], (err, results) => {
+        if (err) {
+            console.error('Error feching user:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        if (results.length > 0) {
+            res.json(results[0])
+        } else {
+            res.status(404).json({ message: 'User Not Found'});
+        }
+    });
+});
+module.exports = router;
+
 //Activate User enpoint
 router.put('/api/users/:userId/activate', authenticateToken, (req, res) => {
     const userId = req.params.userId;
