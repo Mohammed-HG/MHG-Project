@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { handleLogout } from './Logout';
 import MessageModal from "../components/MessageModal";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faInfoCircle, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 const NavBar = () => {
     const navigate = useNavigate();
@@ -27,23 +29,28 @@ const NavBar = () => {
         <nav className="navbar navbar-expand-sm bg-dark navbar-dark">
             <div className="container-fluid">
                 <a className="navbar-brand" href="#">Phone Book App</a>
-                <ul className="navbar-nav">
-                    <li className="nav-item">
-                        <button className="nav-link active btn btn-link" onClick={handleAccountClick}>
-                            Account
-                        </button>
-                    </li>
-                    <li className="nav-item">
-                        <button className="nav-link btn btn-link" onClick={handleLogoutClick}>
-                            Logout
-                        </button>
-                    </li>
-                    <li className="nav-item">
-                        <button className="nav-link btn btn-link" onClick={handleAboutClick}>
-                            About
-                        </button>
-                    </li>
-                </ul>
+                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span className="navbar-toggler-icon"></span>
+                </button>
+                <div className="collapse navbar-collapse" id="navbarNav">
+                    <ul className="navbar-nav ms-auto">
+                        <li className="nav-item">
+                            <button className="nav-link active btn btn-link" onClick={handleAccountClick}>
+                                <FontAwesomeIcon icon={faUser} /> Account
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className="nav-link btn btn-link" onClick={handleLogoutClick}>
+                                <FontAwesomeIcon icon={faSignOutAlt} /> Logout
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className="nav-link btn btn-link" onClick={handleAboutClick}>
+                                <FontAwesomeIcon icon={faInfoCircle} /> About
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <MessageModal
                 show={modalShow}
