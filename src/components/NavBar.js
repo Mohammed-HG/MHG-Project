@@ -1,59 +1,58 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { handleLogout } from '../pages/Logout';
-import MessageModal from './MessageModal';
-import '../styles/NavBar.css';
-import styled from 'styled-components';
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { handleLogout } from './Logout';
+import MessageModal from "../components/MessageModal";
 
 const NavBar = () => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  const [modalShow, setModalShow] = useState(false);
-  const [modalTitle, setModalTitle] = useState('');
-  const [modalMessage, setModalMessage] = useState('');
+    const [modalShow, setModalShow] = useState(false);
+    const [modalTitle, setModalTitle] = useState('');
+    const [modalMessage, setModalMessage] = useState('');
 
-  const handleLogoutClick = (e) => {
-    e.preventDefault();
-    handleLogout(navigate, setModalShow, setModalTitle, setModalMessage);
-  };
+    const handleLogoutClick = (e) => {
+        e.preventDefault();
+        handleLogout(navigate, setModalShow, setModalTitle, setModalMessage);
+    };
 
+    const handleAccountClick = () => {
+        navigate('/account');
+    };
 
+    const handleAboutClick = () => {
+        navigate('/about');
+    };
 
-  return (
- <Navbar expand="lg" className="bg-body-tertiary">
-      <Container>
-        <Navbar.Brand href="#home">Phone Book</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link href="#home">Home</Nav.Link>
-            <button className="nav-link btn btn-link" onClick={handleLogoutClick}> Logout </button>
-            <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-              <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.2">
-                Another action
-              </NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item href="#action/3.4">
-                Separated link
-              </NavDropdown.Item>
-            </NavDropdown>
-          </Nav>
-        </Navbar.Collapse>
-        <MessageModal
-        show={modalShow}
-        handleClose={() => setModalShow(false)}
-        title={modalTitle}
-        message={modalMessage}
-      />
-      </Container>
-    </Navbar>
-  );
-}
+    return (
+        <nav className="navbar navbar-expand-sm bg-dark navbar-dark">
+            <div className="container-fluid">
+                <a className="navbar-brand" href="#">Phone Book App</a>
+                <ul className="navbar-nav">
+                    <li className="nav-item">
+                        <button className="nav-link active btn btn-link" onClick={handleAccountClick}>
+                            Account
+                        </button>
+                    </li>
+                    <li className="nav-item">
+                        <button className="nav-link btn btn-link" onClick={handleLogoutClick}>
+                            Logout
+                        </button>
+                    </li>
+                    <li className="nav-item">
+                        <button className="nav-link btn btn-link" onClick={handleAboutClick}>
+                            About
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <MessageModal
+                show={modalShow}
+                handleClose={() => setModalShow(false)}
+                title={modalTitle}
+                message={modalMessage}
+            />
+        </nav>
+    );
+};
 
 export default NavBar;
