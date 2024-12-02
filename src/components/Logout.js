@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import MessageModal from "../components/MessageModal";
+import MessageModal from "./MessageModal";
 
 export const handleLogout = async (navigate, setModalShow, setModalTitle, setModalMessage) => {
     try {
