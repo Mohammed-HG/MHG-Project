@@ -178,6 +178,10 @@ const LoginForm = () => {
     }
   };
 
+  const handleAdminClick = () => {
+    navigate('/admin');
+  }
+
   return (
     <Container>
       <Form onSubmit={handleLogin} className="was-validated">
@@ -225,6 +229,7 @@ const LoginForm = () => {
           </>
         )}
         {!otpSent && <Button type="submit">Login</Button>}
+        
         <MessageModal
           show={modalShow}
           handleClose={handleClose}
