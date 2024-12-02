@@ -199,6 +199,7 @@ const Main = () => {
       setModalTitle('Authentication Error');
       setModalMessage('Authentication token expired. Please log in.');
       setModalShow(true);
+      navigate('/login');
       return;
     }
     try {
