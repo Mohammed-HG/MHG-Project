@@ -83,29 +83,30 @@ const ResendButton = styled(Button)`
 `;
 
 const RegisterForm = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [modalShow, setModalShow] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
 
-  const [email, setEmail] = useState('');
+  const handleClose = () => setModalShow(false);
+  const navigate = useNavigate();
+
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
+  const [contact, setContact] = useState(''); // email or phone number
+
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   const [counter, setCounter] = useState(10);
   const [resendDisabled, setResendDisabled] = useState(true);
 
-  const [modalShow, setModalShow] = useState(false);
-  const [modalTitle, setModalTitle] = useState('');
-  const [modalMessage, setModalMessage] = useState('');
-  
-  const navigate = useNavigate();
-  const handleClose = () => setModalShow(false);
-
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://127.0.0.1:3000/api/register', { username, password, email });
+      await axios.post('http://127.0.0.1:3000/api/register', { username, password });
       setModalTitle('Registration Successful');
-      setModalMessage('You have registered successfully. Please check your email or phone for an OTP to verify your account.');
+      setModalMessage('You have registered successfully. Please check your phone for an OTP to verify your account.');
       setModalShow(true);
       setOtpSent(true);
       setCounter(10);
@@ -133,17 +134,17 @@ const RegisterForm = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://127.0.0.1:3000/api/verify-otp', { email, otp }, {
+      const response = await axios.post('http://127.0.0.1:3000/api/verify-otp', { contact, otp }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (response.status === 200) {
-        setModalTitle('Verification Successful');
-        setModalMessage('Your account has been verified successfully. You can now log in.');
+        setModalTitle('Register Successful');
+        setModalMessage('OTP verified successfully.');
         setModalShow(true);
         setTimeout(() => {
           handleClose();
           navigate('/login');
-        }, 1500);
+        }, 1000);
       }
     } catch (error) {
       setModalTitle('OTP Verification Error');
@@ -154,9 +155,9 @@ const RegisterForm = () => {
 
   const handleResendOtp = async () => {
     try {
-      await axios.post('http://127.0.0.1:3000/api/send-otp', { email, type: 'email' });
+      await axios.post('http://127.0.0.1:3000/api/send-otp', { username });
       setModalTitle('OTP Sent');
-      setModalMessage('A new OTP has been sent to your email.');
+      setModalMessage('A new OTP has been sent to your phone.');
       setModalShow(true);
       setCounter(10);
       setResendDisabled(true);
@@ -173,23 +174,24 @@ const RegisterForm = () => {
         <Title>Register</Title>
         <Input
           type="text"
-          placeholder="Enter username"
+          placeholder="Set New Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
         />
         <Input
           type="password"
-          placeholder="Enter password"
+          placeholder="Set New Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
         <Input
-          type="email"
-          placeholder="Enter email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          value={contact}
+          onChange={(e) => setContact(e.target.value)}
+          placeholder="Verify by email or phone number"
+          name="contact"
           required
         />
         {otpSent && (
@@ -200,6 +202,7 @@ const RegisterForm = () => {
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
                 placeholder="Enter OTP"
+                name="otp"
                 required
               />
               <SmallButton type="button" onClick={handleVerifyOtp}>Verify</SmallButton>
@@ -209,7 +212,8 @@ const RegisterForm = () => {
             </ResendButton>
           </>
         )}
-        {!otpSent && <Button type="submit">Register</Button>}
+        {!otpSent && <Button type="submit">Regiser</Button>}
+
         <MessageModal
           show={modalShow}
           handleClose={handleClose}
