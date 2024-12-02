@@ -6,6 +6,8 @@ import AddContact from './pages/AddContact';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Admin from './pages/Admin';
+import Account from './pages/Account';
+import About from './components/About';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
@@ -18,6 +20,9 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/account" element={<Account />} />
+        <Route path="/about" element={<About />} />
+
       </Routes>
     </Router>
   );
