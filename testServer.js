@@ -111,7 +111,9 @@ app.post('/api/send-otp', (req, res) => {
     sendOTPSMS(contact, otp); 
     res.status(200).send('OTP Sent'); 
 
-}); // Verify OTP endpoint 
+}); 
+
+// Verify OTP endpoint 
 app.post('/api/verify-otp', authenticateToken, (req, res) => { 
     const { contact, otp } = req.body; 
         if (userOTP[contact] === otp) { 
@@ -122,7 +124,69 @@ app.post('/api/verify-otp', authenticateToken, (req, res) => {
         }
 });
 
-// Get All\Search endpoint
+//Get All Users endpoint
+router.get('/api/users', authenticateToken, (req, res) => {
+    const sql = 'Select UserId, UserName, isActive From users';
+
+    db.query(sql,(err, results) => {
+        if (err) {
+            console.error('Error Fetching Users', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        res.json(results);
+    });
+});
+
+//Get (Me) User endpoint
+router.get('/api/users/me', authenticateToken, (req, res) => {
+    const userId = req.user; // Accessing user ID from the token
+    console.log('User ID from token:', userId); // Log userId to ensure it's correct
+    const sql = 'Select `UserName`, `UserId` From `users` Where `UserId` = ?';
+
+    db.query(sql, [userId], (err, results) => {
+        if (err) {
+            console.error('Error feching user:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        if (results.length > 0) {
+            res.json(results[0])
+        } else {
+            res.status(404).json({ message: 'User Not Found'});
+        }
+    });
+});
+module.exports = router;
+
+//Activate User enpoint
+router.put('/api/users/:userId/activate', authenticateToken, (req, res) => {
+    const userId = req.params.userId;
+    const sql = 'Update users Set isActive = 1 Where UserId = ?';
+
+    db.query(sql, [userId], (err, result) => {
+        if (err) {
+            console.error('Error Activating User:', err);
+            return res.status(500).json({ error:'Internal server error' });
+        }
+        res.json({ message: 'User actvates successfully' });
+    });
+});
+
+//Deactivate User endpoint
+router.put('/api/users/:userId/deactivate', authenticateToken, (req, res) => {
+    const userId = req.params.userId;
+    const sql = 'Update users Set isActive = 0 Where UserId = ?';
+
+    db.query(sql, [userId], (err, result) => {
+        if (err) {
+            console.error('Error deactivating user:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        res.json({ message: 'User deactivated successfully'});
+    });
+});
+app.use(router);
+
+// Get All\Search Contacts endpoint
 app.get('/api/contacts', authenticateToken, (req, res) => {
     const { search } = req.query;  // Using 'search' as the query parameter
     const userId = req.user.userId;
