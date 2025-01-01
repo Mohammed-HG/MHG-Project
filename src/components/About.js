@@ -1,11 +1,9 @@
-<<<<<<< HEAD
 import React from "react";
 import axios from "axios";
 
 const About = () => {
     
 }
-=======
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -138,4 +136,3 @@ const About = () => {
 };
 
 export default About;
->>>>>>> cb206393bbfd58e72c5fe046a0503128736fbb18

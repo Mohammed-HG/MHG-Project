@@ -182,10 +182,15 @@ const LoginForm = () => {
     navigate('/admin');
   }
 
+  const handleRegisterClick = () => {
+    navigate('/register');
+  }
+
+
   return (
     <Container>
       <Form onSubmit={handleLogin} className="was-validated">
-        <Title>Login</Title>
+        <Title>Welcome Back</Title>
         <Input
           type="text"
           value={username}
@@ -229,6 +234,10 @@ const LoginForm = () => {
           </>
         )}
         {!otpSent && <Button type="submit">Login</Button>}
+        
+        <Title></Title>
+        <h5>Don't Have Account ?</h5>
+        <smallButton type="button" onClick={handleRegisterClick}>Register Now!</smallButton>
         
         <MessageModal
           show={modalShow}

@@ -139,7 +139,8 @@ router.get('/api/users', authenticateToken, (req, res) => {
 
 //Get (Me) User endpoint
 router.get('/api/users/me', authenticateToken, (req, res) => {
-    const userId = req.user.id; // Accessing user ID from the token    
+    const userId = req.user; // Accessing user ID from the token
+    console.log('User ID from token:', userId); // Log userId to ensure it's correct
     const sql = 'Select `UserName`, `UserId` From `users` Where `UserId` = ?';
 
     db.query(sql, [userId], (err, results) => {

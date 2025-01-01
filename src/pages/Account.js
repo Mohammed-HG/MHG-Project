@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import MessageModal from '../components/MessageModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // Ensure this import is added
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'; // Ensure this import is added
 
@@ -71,6 +72,11 @@ const Account = () => {
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
 
+  const [modalShow, setModalShow] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
+  const handleClose = () => setModalShow(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -93,8 +99,15 @@ const Account = () => {
       console.log('User:', response.data.UserName);  // Log the UserName
       console.log('UserId:', response.data.UserId);  // Corrected case for UserId
     } catch (error) {
-      if (error.response && error.response.status === 401) {
+      if (error.response && error.response.status === 403) {
+        setModalTitle('Session Expired');
+        setModalMessage('Your session has expired. Please log in again.');
+        setModalShow(true);
         navigate('/login');
+      } else if (error.response && error.response.status === 404){
+        setModalTitle('Data Fetch Error');
+        setModalMessage('Data not found');
+        setModalShow(true);
       } else {
         console.error('Failed to fetch user:', error);
       }
@@ -118,6 +131,14 @@ const Account = () => {
             <Loader />
           )}
         </Card>
+
+        <MessageModal
+          show={modalShow}
+          handleClose={handleClose}
+          title={modalTitle}
+          message={modalMessage}
+        />
+
       </Container>
     </>
   );

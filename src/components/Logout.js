@@ -7,7 +7,7 @@ export const handleLogout = async (navigate, setModalShow, setModalTitle, setMod
     try {
         await axios.post('http://127.0.0.1:3000/api/logout');
         localStorage.removeItem('token');
-        navigate('/login');
+        navigate('/');
     } catch (error) {
         console.error('Error logging out:', error);
         setModalTitle('Error logging out');
