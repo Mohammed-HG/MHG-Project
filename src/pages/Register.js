@@ -90,11 +90,6 @@ const RegisterForm = () => {
   const handleClose = () => setModalShow(false);
   const navigate = useNavigate();
 
-  const [otp, setOtp] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
-  const [contact, setContact] = useState(''); // email or phone number
-
-
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -105,65 +100,16 @@ const RegisterForm = () => {
     e.preventDefault();
     try {
       await axios.post('http://127.0.0.1:3000/api/register', { username, password });
-      setModalTitle('Registration Successful');
-      setModalMessage('You have registered successfully. Please check your phone for an OTP to verify your account.');
-      setModalShow(true);
-      setOtpSent(true);
-      setCounter(10);
-      setResendDisabled(true);
-    } catch (error) {
-      setModalTitle('Registration Error');
-      setModalMessage('There was an error during registration. Please try again.');
-      setModalShow(true);
-    }
-  };
-
-  useEffect(() => {
-    let timer;
-    if (otpSent && counter > 0) {
-      timer = setTimeout(() => {
-        setCounter(counter - 1);
-      }, 1000);
-    } else if (counter === 0) {
-      setResendDisabled(false);
-    }
-    return () => clearTimeout(timer);
-  }, [otpSent, counter]);
-
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post('http://127.0.0.1:3000/api/verify-otp', { contact, otp }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.status === 200) {
         setModalTitle('Register Successful');
-        setModalMessage('OTP verified successfully.');
+        setModalMessage('You Have Account Now!, you can Login ');
         setModalShow(true);
         setTimeout(() => {
           handleClose();
           navigate('/login');
         }, 1000);
-      }
     } catch (error) {
-      setModalTitle('OTP Verification Error');
-      setModalMessage('Invalid OTP. Please try again.');
-      setModalShow(true);
-    }
-  };
-
-  const handleResendOtp = async () => {
-    try {
-      await axios.post('http://127.0.0.1:3000/api/send-otp', { username });
-      setModalTitle('OTP Sent');
-      setModalMessage('A new OTP has been sent to your phone.');
-      setModalShow(true);
-      setCounter(10);
-      setResendDisabled(true);
-    } catch (error) {
-      setModalTitle('Error');
-      setModalMessage('Failed to resend OTP. Please try again.');
+      setModalTitle('Registration Error');
+      setModalMessage('There was an error during registration. Please try again.');
       setModalShow(true);
     }
   };
@@ -186,33 +132,8 @@ const RegisterForm = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <Input
-          type="text"
-          value={contact}
-          onChange={(e) => setContact(e.target.value)}
-          placeholder="Verify by email or phone number"
-          name="contact"
-          required
-        />
-        {otpSent && (
-          <>
-            <InputGroup>
-              <Input
-                type="text"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                placeholder="Enter OTP"
-                name="otp"
-                required
-              />
-              <SmallButton type="button" onClick={handleVerifyOtp}>Verify</SmallButton>
-            </InputGroup>
-            <ResendButton type="button" onClick={handleResendOtp} disabled={resendDisabled}>
-              {resendDisabled ? `Resend OTP in ${counter}s` : 'Resend OTP'}
-            </ResendButton>
-          </>
-        )}
-        {!otpSent && <Button type="submit">Regiser</Button>}
+
+        <Button type="submit">Regiser</Button>
 
         <MessageModal
           show={modalShow}
